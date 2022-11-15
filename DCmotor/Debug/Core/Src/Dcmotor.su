@@ -1,0 +1,3 @@
+../Core/Src/Dcmotor.c:12:6:HAL_GPIO_EXTI_Callback	16	static
+../Core/Src/Dcmotor.c:157:6:HAL_TIM_PeriodElapsedCallback	24	static
+../Core/Src/Dcmotor.c:173:6:PID	40	static
