@@ -172,32 +172,34 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	}
 }
 
-void PID(float *SetPoint, float* CV, float *current_error,float* PidOutput)
+void PID(float *SetPoint, float* ControlledVariable,float* PidOutput)
 {
+	// PWM mode has the range from 0 to 400.
 	float HighLimit=400;
-	static float u,u_hat,uk,ui,previous_ui;
+	static float ManipulatedVariable,ManipulatedVariableHat,uk,ui,previous_ui,CurrentError;
+
 	// Calculate the error
-	*current_error=*SetPoint-*CV;
+	CurrentError=*SetPoint-*ControlledVariable;
 
 	// Proportion
-	uk=(Kp)*(*current_error);
+	uk=Kp*CurrentError;
 
 	// Integration
-	ui=previous_ui+Ki*(*current_error)*0.1;
-	u=ui+uk;
+	ui=previous_ui+Ki*CurrentError*0.1;
+	ManipulatedVariable=ui+uk;
 
-	if(u<HighLimit)
+	if(ManipulatedVariable<HighLimit)
 	{
-		u_hat=u;
-		reset_error=0;
-		*PidOutput=u;
+		ManipulatedVariableHat=ManipulatedVariable;
+		ResetError=0;
+		*PidOutput=ManipulatedVariable;
 	}
-	if(u>HighLimit)
+	if(ManipulatedVariable>HighLimit)
 	{
-		u_hat=HighLimit;
-		reset_error=u_hat-u;
-		anti_windup_error=Ki*(*current_error)+reset_error*Kb;
-		ui=previous_ui+Ki*anti_windup_error*0.8;
+		ManipulatedVariableHat=HighLimit;
+		ResetError=ManipulatedVariableHat-ManipulatedVariable;
+		AntiWindupError=Ki*CurrentError+ResetError*Kb;
+		ui=previous_ui+Ki*AntiWindupError*0.8;
 		*PidOutput=uk+ui;
 	}
 	previous_ui=ui;

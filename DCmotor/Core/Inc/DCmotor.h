@@ -22,7 +22,7 @@
 
 void ReadEncoder();
 void ComputeVelocity();
-void PID(float *SetPoint, float* CV, float *current_error,float* PidOutput);
+void PID(float *SetPoint, float* CV,float* PidOutput);
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
@@ -34,7 +34,7 @@ float current_error;
 float previous_rads_left_velocity,rads_left_velocity,previous_rads_right_velocity,rads_right_velocity;
 float rpm_left_velocity,rpm_right_velocity,previous_rpm_left_velocity,previous_rpm_right_velocity;
 float previous_pos,pos;
-float previous_error,anti_windup_error,reset_error;
+float previous_error,AntiWindupError,ResetError;
 
 
 /***************TABLE PIN****************/

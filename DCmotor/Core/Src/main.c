@@ -86,8 +86,8 @@ int _write(int file, char *ptr, int len)
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-float PidOut,Kd,rpm_right_velocity,current_error;
-float SetPoint=25.0;
+float PidOut,rpm_right_velocity;
+float SetPoint=5.0;
 
 
 /************* PID parameter ******************/
@@ -162,7 +162,7 @@ int main(void)
     /* USER CODE BEGIN 3 */
     ReadEncoder();
     ComputeVelocity();
-    PID(&SetPoint,&rpm_right_velocity,&current_error,&PidOut);
+    PID(&SetPoint,&rpm_right_velocity,&PidOut);
     HAL_Delay(100);
 	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_3,fabs(PidOut));
 
