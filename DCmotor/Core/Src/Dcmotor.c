@@ -159,7 +159,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	cnt++;
-	if(cnt==100) //1 cnt = 0.001s, default:80 = 0.8s
+	if(cnt==(1000*SAMPLE_TIME)) //1 cnt = 0.001s, default:100 = 0.1s
 	{
 
 		rads_left_velocity  = left_count*2*PI/(5376*0.001*cnt);
@@ -190,7 +190,7 @@ void PID(float *SetPoint, float* ControlledVariable,float* PidOutput)
 	uk=Kp*CurrentError;
 
 	// Integration
-	ui=previous_ui+Ki*CurrentError*0.1;
+	ui=previous_ui+Ki*CurrentError*SAMPLE_TIME;
 	ManipulatedVariable=ui+uk;
 
 	if(ManipulatedVariable<HighLimit)
@@ -204,7 +204,7 @@ void PID(float *SetPoint, float* ControlledVariable,float* PidOutput)
 		ManipulatedVariableHat=HighLimit;
 		ResetError=ManipulatedVariableHat-ManipulatedVariable;
 		AntiWindupError=Ki*CurrentError+ResetError*Kb;
-		ui=previous_ui+AntiWindupError*0.1;
+		ui=previous_ui+AntiWindupError*SAMPLE_TIME;
 		*PidOutput=uk+ui;
 	}
 	previous_ui=ui;

@@ -19,8 +19,10 @@
 #define Kp 0.229
 #define Ki 15.3
 #define Kb 22.222
+#define SAMPLE_TIME 0.1
 #define WHEEL_SEPARATION 0.3
 #define WHEEL_RADIUS 0.05
+
 
 void ReadEncoder();
 void ComputeVelocity();

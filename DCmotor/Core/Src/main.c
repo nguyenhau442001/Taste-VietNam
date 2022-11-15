@@ -171,7 +171,7 @@ int main(void)
 
     PID(&left_vel,&rpm_left_velocity,&LeftPidOut);
     PID(&right_vel,&rpm_right_velocity,&RightPidOut);
-    HAL_Delay(100);
+    HAL_Delay(1000*SAMPLE_TIME);
 	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_3,fabs(round(LeftPidOut)));
 	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_1,fabs(round(RightPidOut)));
 	current_tick=HAL_GetTick();
