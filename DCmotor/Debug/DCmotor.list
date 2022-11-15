@@ -21,29 +21,29 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, ALLOC, LOAD, DATA
   8 .data         00000200  20000000  0800d2e4  00020000  2**2
                   CONTENTS, ALLOC, LOAD, DATA
-  9 .bss          00000964  20000200  0800d4e4  00020200  2**2
+  9 .bss          0000095c  20000200  0800d4e4  00020200  2**2
                   ALLOC
- 10 ._user_heap_stack 00000604  20000b64  0800d4e4  00020b64  2**0
+ 10 ._user_heap_stack 00000604  20000b5c  0800d4e4  00020b5c  2**0
                   ALLOC
  11 .ARM.attributes 00000030  00000000  00000000  00020200  2**0
                   CONTENTS, READONLY
- 12 .debug_info   0001c49e  00000000  00000000  00020230  2**0
+ 12 .debug_info   0001c456  00000000  00000000  00020230  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 00004179  00000000  00000000  0003c6ce  2**0
+ 13 .debug_abbrev 00004179  00000000  00000000  0003c686  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 00001798  00000000  00000000  00040848  2**3
+ 14 .debug_aranges 00001798  00000000  00000000  00040800  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_ranges 000015e8  00000000  00000000  00041fe0  2**3
+ 15 .debug_ranges 000015e8  00000000  00000000  00041f98  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  0001b884  00000000  00000000  000435c8  2**0
+ 16 .debug_macro  0001b884  00000000  00000000  00043580  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   0001dee9  00000000  00000000  0005ee4c  2**0
+ 17 .debug_line   0001dee9  00000000  00000000  0005ee04  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    00098d32  00000000  00000000  0007cd35  2**0
+ 18 .debug_str    00098d19  00000000  00000000  0007cced  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000050  00000000  00000000  00115a67  2**0
+ 19 .comment      00000050  00000000  00000000  00115a06  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  0000749c  00000000  00000000  00115ab8  2**2
+ 20 .debug_frame  0000749c  00000000  00000000  00115a58  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -1611,7 +1611,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
  80011c8:	2000021d 	.word	0x2000021d
  80011cc:	2000021e 	.word	0x2000021e
  80011d0:	20000250 	.word	0x20000250
- 80011d4:	200002ac 	.word	0x200002ac
+ 80011d4:	200002a4 	.word	0x200002a4
  80011d8:	2000021f 	.word	0x2000021f
 		 	 	 	 		 	 if(left_previous==2){left_count++;}
  80011dc:	4b93      	ldr	r3, [pc, #588]	; (800142c <HAL_GPIO_EXTI_Callback+0x4d0>)
@@ -1932,13 +1932,13 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
  8001428:	e04d      	b.n	80014c6 <HAL_GPIO_EXTI_Callback+0x56a>
  800142a:	bf00      	nop
  800142c:	20000250 	.word	0x20000250
- 8001430:	200002ac 	.word	0x200002ac
+ 8001430:	200002a4 	.word	0x200002a4
  8001434:	2000021f 	.word	0x2000021f
  8001438:	40021000 	.word	0x40021000
  800143c:	20000220 	.word	0x20000220
  8001440:	20000221 	.word	0x20000221
  8001444:	20000222 	.word	0x20000222
- 8001448:	2000029c 	.word	0x2000029c
+ 8001448:	20000294 	.word	0x20000294
  800144c:	2000025c 	.word	0x2000025c
  8001450:	20000223 	.word	0x20000223
 		 	 	 	 		 	 if(right_previous==3){right_count++;}
@@ -2030,7 +2030,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
  80014e2:	46bd      	mov	sp, r7
  80014e4:	bd80      	pop	{r7, pc}
  80014e6:	bf00      	nop
- 80014e8:	2000029c 	.word	0x2000029c
+ 80014e8:	20000294 	.word	0x20000294
  80014ec:	2000025c 	.word	0x2000025c
  80014f0:	20000223 	.word	0x20000223
  80014f4:	00000000 	.word	0x00000000
@@ -2176,8 +2176,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
  800161c:	40158106 	.word	0x40158106
  8001620:	20000268 	.word	0x20000268
  8001624:	2000025c 	.word	0x2000025c
- 8001628:	2000027c 	.word	0x2000027c
- 800162c:	200002a8 	.word	0x200002a8
+ 8001628:	20000278 	.word	0x20000278
+ 800162c:	200002a0 	.word	0x200002a0
  8001630:	30c30c31 	.word	0x30c30c31
  8001634:	20000270 	.word	0x20000270
  8001638:	20000260 	.word	0x20000260
@@ -2414,7 +2414,7 @@ void PID(float *SetPoint, float* CV, float *current_error,float* PidOutput)
  800184c:	2000022c 	.word	0x2000022c
  8001850:	20000230 	.word	0x20000230
  8001854:	20000234 	.word	0x20000234
- 8001858:	200002a4 	.word	0x200002a4
+ 8001858:	2000029c 	.word	0x2000029c
  800185c:	20000258 	.word	0x20000258
 
 08001860 <ReadEncoder>:
@@ -2658,13 +2658,13 @@ int main(void)
     MX_USB_HOST_Process();
  80019b0:	e7e3      	b.n	800197a <main+0x72>
  80019b2:	bf00      	nop
- 80019b4:	200003a8 	.word	0x200003a8
- 80019b8:	20000304 	.word	0x20000304
+ 80019b4:	200003a0 	.word	0x200003a0
+ 80019b8:	200002fc 	.word	0x200002fc
  80019bc:	40021000 	.word	0x40021000
  80019c0:	40020400 	.word	0x40020400
- 80019c4:	20000480 	.word	0x20000480
- 80019c8:	20000290 	.word	0x20000290
- 80019cc:	200002a8 	.word	0x200002a8
+ 80019c4:	20000478 	.word	0x20000478
+ 80019c8:	20000288 	.word	0x20000288
+ 80019cc:	200002a0 	.word	0x200002a0
  80019d0:	20000000 	.word	0x20000000
 
 080019d4 <SystemClock_Config>:
@@ -2917,7 +2917,7 @@ static void MX_I2C1_Init(void)
 }
  8001b30:	bf00      	nop
  8001b32:	bd80      	pop	{r7, pc}
- 8001b34:	200002b0 	.word	0x200002b0
+ 8001b34:	200002a8 	.word	0x200002a8
  8001b38:	40005400 	.word	0x40005400
  8001b3c:	000186a0 	.word	0x000186a0
 
@@ -2988,7 +2988,7 @@ static void MX_I2S2_Init(void)
 }
  8001b8c:	bf00      	nop
  8001b8e:	bd80      	pop	{r7, pc}
- 8001b90:	200003f0 	.word	0x200003f0
+ 8001b90:	200003e8 	.word	0x200003e8
  8001b94:	40003800 	.word	0x40003800
  8001b98:	00017700 	.word	0x00017700
 
@@ -3060,7 +3060,7 @@ static void MX_I2S3_Init(void)
  8001bea:	bf00      	nop
  8001bec:	bd80      	pop	{r7, pc}
  8001bee:	bf00      	nop
- 8001bf0:	20000438 	.word	0x20000438
+ 8001bf0:	20000430 	.word	0x20000430
  8001bf4:	40003c00 	.word	0x40003c00
  8001bf8:	00017700 	.word	0x00017700
 
@@ -3143,7 +3143,7 @@ static void MX_SPI1_Init(void)
 }
  8001c5c:	bf00      	nop
  8001c5e:	bd80      	pop	{r7, pc}
- 8001c60:	20000350 	.word	0x20000350
+ 8001c60:	20000348 	.word	0x20000348
  8001c64:	40013000 	.word	0x40013000
 
 08001c68 <MX_TIM2_Init>:
@@ -3253,7 +3253,7 @@ static void MX_TIM2_Init(void)
  8001cf6:	3718      	adds	r7, #24
  8001cf8:	46bd      	mov	sp, r7
  8001cfa:	bd80      	pop	{r7, pc}
- 8001cfc:	200003a8 	.word	0x200003a8
+ 8001cfc:	200003a0 	.word	0x200003a0
 
 08001d00 <MX_TIM3_Init>:
   * @brief TIM3 Initialization Function
@@ -3424,7 +3424,7 @@ static void MX_TIM3_Init(void)
  8001df6:	46bd      	mov	sp, r7
  8001df8:	bd80      	pop	{r7, pc}
  8001dfa:	bf00      	nop
- 8001dfc:	20000304 	.word	0x20000304
+ 8001dfc:	200002fc 	.word	0x200002fc
  8001e00:	40000400 	.word	0x40000400
 
 08001e04 <MX_GPIO_Init>:
@@ -4663,7 +4663,7 @@ void TIM2_IRQHandler(void)
  80024fe:	bf00      	nop
  8002500:	bd80      	pop	{r7, pc}
  8002502:	bf00      	nop
- 8002504:	200003a8 	.word	0x200003a8
+ 8002504:	200003a0 	.word	0x200003a0
 
 08002508 <TIM3_IRQHandler>:
 
@@ -4687,7 +4687,7 @@ void TIM3_IRQHandler(void)
  8002512:	bf00      	nop
  8002514:	bd80      	pop	{r7, pc}
  8002516:	bf00      	nop
- 8002518:	20000304 	.word	0x20000304
+ 8002518:	200002fc 	.word	0x200002fc
 
 0800251c <EXTI15_10_IRQHandler>:
 
@@ -4745,7 +4745,7 @@ void OTG_FS_IRQHandler(void)
  8002556:	bf00      	nop
  8002558:	bd80      	pop	{r7, pc}
  800255a:	bf00      	nop
- 800255c:	20000860 	.word	0x20000860
+ 800255c:	20000858 	.word	0x20000858
 
 08002560 <_getpid>:
 void initialise_monitor_handles()
@@ -5004,7 +5004,7 @@ void *_sbrk(ptrdiff_t incr)
  80026a4:	20020000 	.word	0x20020000
  80026a8:	00000400 	.word	0x00000400
  80026ac:	20000238 	.word	0x20000238
- 80026b0:	20000b68 	.word	0x20000b68
+ 80026b0:	20000b60 	.word	0x20000b60
 
 080026b4 <SystemInit>:
   *         configuration.
@@ -5125,7 +5125,7 @@ LoopFillZerobss:
   ldr r2, =_sbss
  8002720:	20000200 	.word	0x20000200
   ldr r4, =_ebss
- 8002724:	20000b64 	.word	0x20000b64
+ 8002724:	20000b5c 	.word	0x20000b5c
 
 08002728 <ADC_IRQHandler>:
  * @retval None       
@@ -5288,7 +5288,7 @@ __weak void HAL_IncTick(void)
  80027ec:	4770      	bx	lr
  80027ee:	bf00      	nop
  80027f0:	2000000c 	.word	0x2000000c
- 80027f4:	20000484 	.word	0x20000484
+ 80027f4:	2000047c 	.word	0x2000047c
 
 080027f8 <HAL_GetTick>:
   * @note This function is declared as __weak to be overwritten in case of other 
@@ -5308,7 +5308,7 @@ __weak uint32_t HAL_GetTick(void)
  8002804:	f85d 7b04 	ldr.w	r7, [sp], #4
  8002808:	4770      	bx	lr
  800280a:	bf00      	nop
- 800280c:	20000484 	.word	0x20000484
+ 800280c:	2000047c 	.word	0x2000047c
 
 08002810 <HAL_Delay>:
   *       implementations in user file.
@@ -25425,7 +25425,7 @@ void MX_USB_HOST_Init(void)
  8009e18:	bd80      	pop	{r7, pc}
  8009e1a:	bf00      	nop
  8009e1c:	08009e3d 	.word	0x08009e3d
- 8009e20:	20000488 	.word	0x20000488
+ 8009e20:	20000480 	.word	0x20000480
  8009e24:	20000010 	.word	0x20000010
 
 08009e28 <MX_USB_HOST_Process>:
@@ -25445,7 +25445,7 @@ void MX_USB_HOST_Process(void)
  8009e32:	bf00      	nop
  8009e34:	bd80      	pop	{r7, pc}
  8009e36:	bf00      	nop
- 8009e38:	20000488 	.word	0x20000488
+ 8009e38:	20000480 	.word	0x20000480
 
 08009e3c <USBH_UserProcess>:
 /*
@@ -25854,7 +25854,7 @@ USBH_StatusTypeDef USBH_LL_Init(USBH_HandleTypeDef *phost)
  800a072:	46bd      	mov	sp, r7
  800a074:	bd80      	pop	{r7, pc}
  800a076:	bf00      	nop
- 800a078:	20000860 	.word	0x20000860
+ 800a078:	20000858 	.word	0x20000858
 
 0800a07c <USBH_LL_Start>:
   * @brief  Start the low level portion of the host driver.
