@@ -87,7 +87,7 @@ int _write(int file, char *ptr, int len)
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 float PidOut,rpm_right_velocity;
-float SetPoint=5.0;
+float SetPoint=10.0;
 
 
 /************* PID parameter ******************/
@@ -165,7 +165,7 @@ int main(void)
     PID(&SetPoint,&rpm_right_velocity,&PidOut);
     HAL_Delay(100);
 	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_3,fabs(PidOut));
-
+	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_1,fabs(PidOut));
 
 //    if((right_count>=0)&&(right_count<5376))
 //    {

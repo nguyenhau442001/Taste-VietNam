@@ -19,6 +19,8 @@
 #define Kp 0.229
 #define Ki 15.3
 #define Kb 22.222
+#define WHEEL_SEPARATION 0.3
+#define WHEEL_RADIUS 0.05
 
 void ReadEncoder();
 void ComputeVelocity();
@@ -30,11 +32,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
 int current_tick, previous_tick,diff_tick;
 int right_count,left_count,right_previous,left_previous,cnt;
 
-float current_error;
+
 float previous_rads_left_velocity,rads_left_velocity,previous_rads_right_velocity,rads_right_velocity;
 float rpm_left_velocity,rpm_right_velocity,previous_rpm_left_velocity,previous_rpm_right_velocity;
 float previous_pos,pos;
-float previous_error,AntiWindupError,ResetError;
+float AntiWindupError,ResetError;
 
 
 /***************TABLE PIN****************/

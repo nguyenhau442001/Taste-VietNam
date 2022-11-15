@@ -162,11 +162,16 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	if(cnt==100) //1 cnt = 0.001s, default:80 = 0.8s
 	{
 
-		rads_right_velocity=right_count*2*PI/(5376*0.001*cnt);
-		rpm_right_velocity=right_count*60/(5376*0.001*cnt);
-		pos=previous_pos+right_count*360/5376;
-		previous_pos=pos;
+		rads_left_velocity  = left_count*2*PI/(5376*0.001*cnt);
+		rpm_left_velocity   = left_count*60/(5376*0.001*cnt);
+
+		rads_right_velocity = right_count*2*PI/(5376*0.001*cnt);
+		rpm_right_velocity  = right_count*60/(5376*0.001*cnt);
+
+//		pos=previous_pos+right_count*360/5376;
+//		previous_pos=pos;
 		printf("%0.5f\n",rpm_right_velocity);
+		left_count=0;
 		right_count=0;
 		cnt=0;
 	}
