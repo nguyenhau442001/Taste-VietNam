@@ -93,10 +93,7 @@ int _write(int file, char *ptr, int len)
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-float LeftPidOut,RightPidOut;
-float left_vel,right_vel;
-float v=0.01,omega=0.0;
-extern float rpm_left_velocity,rpm_right_velocity;
+
 /************* PID parameter ******************/
 
 
@@ -174,14 +171,7 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
     loop();
-    ReadEncoder();
-    ComputeVelocity();
-    SubcribeVelocityFromRos(&v,&omega,&left_vel,&right_vel);
-    PID(&left_vel,&rpm_left_velocity,&LeftPidOut);
-//    PID(&right_vel,&rpm_right_velocity,&RightPidOut);
-    HAL_Delay(1000*SAMPLE_TIME);
-	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_3,fabs(round(LeftPidOut)));
-//	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_1,fabs(round(RightPidOut)));
+
 //	current_tick=HAL_GetTick();
 //	diff_tick=current_tick-previous_tick;
 

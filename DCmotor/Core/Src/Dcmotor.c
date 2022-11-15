@@ -230,12 +230,12 @@ void ComputeVelocity()
 	void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
 }
 
-void SubcribeVelocityFromRos(float *linear_velocity,float *angular_velocity,float *left_velocity,float *right_velocity)
+void SubcribeVelocityFromRos(const double linear_velocity,const double angular_velocity,float *left_velocity,float *right_velocity)
 {
 
 	// Calculate vel of each wheel
-	*left_velocity  = ((2*(*linear_velocity)-(*angular_velocity)*WHEEL_SEPARATION))/2;  // unit: m/s
-	*right_velocity = ((2*(*linear_velocity)+(*angular_velocity)*WHEEL_SEPARATION))/2;
+	*left_velocity  = ((2*(linear_velocity)-(angular_velocity)*WHEEL_SEPARATION))/2;  // unit: m/s
+	*right_velocity = ((2*(linear_velocity)+(angular_velocity)*WHEEL_SEPARATION))/2;
 
 	//v=omega.r => omega=v/r (rad/s)
 	*left_velocity  = (*left_velocity)/WHEEL_RADIUS;

@@ -41,7 +41,19 @@ Core/Src/mainpp.o: ../Core/Src/mainpp.cpp ../Core/Inc/mainpp.h \
  ../Core/Inc/rosserial_msgs/RequestParam.h ../Core/Inc/ros/publisher.h \
  ../Core/Inc/ros/node_handle.h ../Core/Inc/ros/subscriber.h \
  ../Core/Inc/ros/service_server.h ../Core/Inc/ros/service_client.h \
- ../Core/Inc/STM32Hardware.h ../Core/Inc/std_msgs/String.h
+ ../Core/Inc/STM32Hardware.h ../Core/Inc/ros/duration.h \
+ ../Core/Inc/tf/tf.h ../Core/Inc/geometry_msgs/TransformStamped.h \
+ ../Core/Inc/std_msgs/Header.h ../Core/Inc/geometry_msgs/Transform.h \
+ ../Core/Inc/geometry_msgs/Vector3.h \
+ ../Core/Inc/geometry_msgs/Quaternion.h ../Core/Inc/ros/time.h \
+ ../Core/Inc/std_msgs/String.h ../Core/Inc/sensor_msgs/Imu.h \
+ ../Core/Inc/sensor_msgs/MagneticField.h \
+ ../Core/Inc/sensor_msgs/JointState.h ../Core/Inc/nav_msgs/Odometry.h \
+ ../Core/Inc/geometry_msgs/PoseWithCovariance.h \
+ ../Core/Inc/geometry_msgs/Pose.h ../Core/Inc/geometry_msgs/Point.h \
+ ../Core/Inc/geometry_msgs/TwistWithCovariance.h \
+ ../Core/Inc/geometry_msgs/Twist.h \
+ ../Core/Inc/turtlebot3_msgs/VersionInfo.h
 ../Core/Inc/mainpp.h:
 ../Core/Inc/DCmotor.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
@@ -94,4 +106,22 @@ Core/Src/mainpp.o: ../Core/Src/mainpp.cpp ../Core/Inc/mainpp.h \
 ../Core/Inc/ros/service_server.h:
 ../Core/Inc/ros/service_client.h:
 ../Core/Inc/STM32Hardware.h:
+../Core/Inc/ros/duration.h:
+../Core/Inc/tf/tf.h:
+../Core/Inc/geometry_msgs/TransformStamped.h:
+../Core/Inc/std_msgs/Header.h:
+../Core/Inc/geometry_msgs/Transform.h:
+../Core/Inc/geometry_msgs/Vector3.h:
+../Core/Inc/geometry_msgs/Quaternion.h:
+../Core/Inc/ros/time.h:
 ../Core/Inc/std_msgs/String.h:
+../Core/Inc/sensor_msgs/Imu.h:
+../Core/Inc/sensor_msgs/MagneticField.h:
+../Core/Inc/sensor_msgs/JointState.h:
+../Core/Inc/nav_msgs/Odometry.h:
+../Core/Inc/geometry_msgs/PoseWithCovariance.h:
+../Core/Inc/geometry_msgs/Pose.h:
+../Core/Inc/geometry_msgs/Point.h:
+../Core/Inc/geometry_msgs/TwistWithCovariance.h:
+../Core/Inc/geometry_msgs/Twist.h:
+../Core/Inc/turtlebot3_msgs/VersionInfo.h:
