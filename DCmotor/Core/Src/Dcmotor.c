@@ -9,6 +9,15 @@
 
 #include "DCmotor.h"
 
+int current_tick, previous_tick,diff_tick;
+int right_count,left_count,right_previous,left_previous,cnt;
+
+
+float previous_rads_left_velocity,rads_left_velocity,previous_rads_right_velocity,rads_right_velocity;
+float rpm_left_velocity,rpm_right_velocity,previous_rpm_left_velocity,previous_rpm_right_velocity;
+float previous_pos,pos;
+float AntiWindupError,ResetError;
+
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
  static unsigned char state0,state1,state2,state3;
@@ -184,7 +193,7 @@ void PID(float *SetPoint, float* ControlledVariable,float* PidOutput)
 	static float previous_ui;
 
 	// Calculate the error
-	CurrentError=*SetPoint-*ControlledVariable;
+	CurrentError=*SetPoint-fabs(*ControlledVariable);
 
 	// Proportion
 	uk=Kp*CurrentError;
@@ -284,5 +293,3 @@ void SubcribeVelocityFromRos(float *linear_velocity,float *angular_velocity,floa
 	}
 
 }
-
-

@@ -25,7 +25,8 @@
 #include "stdbool.h"
 #include "stdio.h"
 #include "math.h"
-#include "DCmotor.h"
+#include "mainpp.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -93,10 +94,9 @@ int _write(int file, char *ptr, int len)
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 float LeftPidOut,RightPidOut;
-//float SetPoint=20.0;
-
 float left_vel,right_vel;
 float v=0.01,omega=0.0;
+extern float rpm_left_velocity,rpm_right_velocity;
 /************* PID parameter ******************/
 
 
@@ -143,6 +143,7 @@ int main(void)
   MX_TIM2_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+  setup();
   HAL_TIM_Base_Start_IT(&htim2);
 
   HAL_TIM_PWM_Start(&htim3,TIM_CHANNEL_1);
@@ -156,8 +157,8 @@ int main(void)
   // IN3,IN4 pin	(motor B)
 	  HAL_GPIO_WritePin(GPIOE,GPIO_PIN_8,GPIO_PIN_RESET);    // (0,1): < 0: forward. (1,0): >0 : reverse.
 	  HAL_GPIO_WritePin(GPIOE,GPIO_PIN_9,GPIO_PIN_SET);
+//
 
-  SubcribeVelocityFromRos(&v,&omega,&left_vel,&right_vel);
 
   // ENA, ENB
 //	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_3,100); // Motor A (left)
@@ -172,19 +173,17 @@ int main(void)
     MX_USB_HOST_Process();
 
     /* USER CODE BEGIN 3 */
-
-//    ReadEncoder();
-//    ComputeVelocity();
-    previous_tick=HAL_GetTick();
-
-
+    loop();
+    ReadEncoder();
+    ComputeVelocity();
+    SubcribeVelocityFromRos(&v,&omega,&left_vel,&right_vel);
     PID(&left_vel,&rpm_left_velocity,&LeftPidOut);
-    PID(&right_vel,&rpm_right_velocity,&RightPidOut);
+//    PID(&right_vel,&rpm_right_velocity,&RightPidOut);
     HAL_Delay(1000*SAMPLE_TIME);
 	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_3,fabs(round(LeftPidOut)));
-	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_1,fabs(round(RightPidOut)));
-	current_tick=HAL_GetTick();
-	diff_tick=current_tick-previous_tick;
+//	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_1,fabs(round(RightPidOut)));
+//	current_tick=HAL_GetTick();
+//	diff_tick=current_tick-previous_tick;
 
   }
   /* USER CODE END 3 */
