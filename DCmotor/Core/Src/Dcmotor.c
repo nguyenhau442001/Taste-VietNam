@@ -11,6 +11,8 @@
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
+ static unsigned char state0,state1,state2,state3;
+ static bool LEFT_ENCODER_A,RIGHT_ENCODER_A, LEFT_ENCODER_B,RIGHT_ENCODER_B;
  /* MOTOR A */
  if (GPIO_Pin == GPIO_PIN_10)
  {
@@ -170,10 +172,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	}
 }
 
-void PID(float *SetPoint, float* CV, float *current_error)
+void PID(float *SetPoint, float* CV, float *current_error,float* PidOutput)
 {
 	float HighLimit=400;
-
+	static float u,u_hat,uk,ui,previous_ui;
 	// Calculate the error
 	*current_error=*SetPoint-*CV;
 
@@ -188,7 +190,7 @@ void PID(float *SetPoint, float* CV, float *current_error)
 	{
 		u_hat=u;
 		reset_error=0;
-		PidOut=u;
+		*PidOutput=u;
 	}
 	if(u>HighLimit)
 	{
@@ -196,8 +198,19 @@ void PID(float *SetPoint, float* CV, float *current_error)
 		reset_error=u_hat-u;
 		anti_windup_error=Ki*(*current_error)+reset_error*Kb;
 		ui=previous_ui+Ki*anti_windup_error*0.8;
-		PidOut=uk+ui;
+		*PidOutput=uk+ui;
 	}
 	previous_ui=ui;
 }
+
+void ReadEncoder()
+{
+	void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
+}
+
+void ComputeVelocity()
+{
+	void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
+}
+
 

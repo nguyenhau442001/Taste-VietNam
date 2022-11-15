@@ -20,16 +20,15 @@
 #define Ki 15.3
 #define Kb 22.222
 
+void ReadEncoder();
+void ComputeVelocity();
+void PID(float *SetPoint, float* CV, float *current_error,float* PidOutput);
+
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
-void PID(float *SetPoint, float* CV, float *current_error);
-
-unsigned char state0,state1,state2,state3;
 
 int current_tick, previous_tick,diff_tick;
 int right_count,left_count,right_previous,left_previous,cnt;
-
-bool LEFT_ENCODER_A,RIGHT_ENCODER_A, LEFT_ENCODER_B,RIGHT_ENCODER_B;
 
 float current_error;
 float previous_rads_left_velocity,rads_left_velocity,previous_rads_right_velocity,rads_right_velocity;
@@ -37,7 +36,7 @@ float previous_filtered_output,filtered_output;
 float rpm_left_velocity,rpm_right_velocity,previous_rpm_left_velocity,previous_rpm_right_velocity;;
 float previous_pos,pos;
 float previous_error,anti_windup_error,reset_error;
-float u,u_hat,uk,up,ui,ud,previous_ui,PidOut;
+
 
 /***************TABLE PIN****************/
 /*******| LEFT_ENCODER_A  | PE10 |********/

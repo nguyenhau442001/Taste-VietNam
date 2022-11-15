@@ -87,7 +87,7 @@ int _write(int file, char *ptr, int len)
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 float PidOut,Kd,rpm_right_velocity,current_error;
-float SetPoint=10.0;
+float SetPoint=25.0;
 
 
 /************* PID parameter ******************/
@@ -160,7 +160,9 @@ int main(void)
     MX_USB_HOST_Process();
 
     /* USER CODE BEGIN 3 */
-    PID(&SetPoint,&rpm_right_velocity,&current_error);
+    ReadEncoder();
+    ComputeVelocity();
+    PID(&SetPoint,&rpm_right_velocity,&current_error,&PidOut);
     HAL_Delay(100);
 	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_3,fabs(PidOut));
 
