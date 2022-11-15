@@ -24,8 +24,8 @@
 
 void ReadEncoder();
 void ComputeVelocity();
-void PID(float *SetPoint, float* CV,float* PidOutput);
-
+void PID(float *SetPoint, float* ControlledVariable,float* PidOutput);
+void SubcribeVelocityFromRos(float *linear_velocity,float *angular_velocity,float *left_velocity,float *right_velocity);
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
 

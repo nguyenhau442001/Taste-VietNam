@@ -14,15 +14,15 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
  static unsigned char state0,state1,state2,state3;
  static bool LEFT_ENCODER_A,RIGHT_ENCODER_A, LEFT_ENCODER_B,RIGHT_ENCODER_B;
  /* MOTOR A */
- if (GPIO_Pin == GPIO_PIN_10)
+ if (GPIO_Pin == GPIO_PIN_12)
  {
-   // chương trình ngắt của chân 10
+   // chương trình ngắt của chân 12
 
-	 LEFT_ENCODER_A=HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_10);
+	 LEFT_ENCODER_A=HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_12);
 	 state0=state0|LEFT_ENCODER_A;
 
 	 state0=state0<<1;
-	 LEFT_ENCODER_B=HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_11);
+	 LEFT_ENCODER_B=HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_13);
 	 state0=state0|LEFT_ENCODER_B;
 	 state0=state0 & 0x03;
 
@@ -48,14 +48,14 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	 left_previous=state0;
  	 }
 
-	 else if (GPIO_Pin == GPIO_PIN_11)
+	 else if (GPIO_Pin == GPIO_PIN_13)
 	 {
-	   // chương trình ngắt của chân 11
-		 LEFT_ENCODER_A=HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_10);
+	   // chương trình ngắt của chân 13
+		 LEFT_ENCODER_A=HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_12);
 		 state1=state1|LEFT_ENCODER_A;
 
 		 state1=state1<<1;
-		 LEFT_ENCODER_B=HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_11);
+		 LEFT_ENCODER_B=HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_13);
 		 state1=state1|LEFT_ENCODER_B;
 		 state1=state1 & 0x03;
 
@@ -82,15 +82,15 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	 }
 
  	 /* MOTOR B */
-	 else if (GPIO_Pin == GPIO_PIN_12)		 // LEFT CHANNEL B
+	 else if (GPIO_Pin == GPIO_PIN_10)		 // LEFT CHANNEL B
 	 {
-		 // chương trình ngắt của chân 12
+		 // chương trình ngắt của chân 10
 
-		 RIGHT_ENCODER_A=HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_12);
+		 RIGHT_ENCODER_A=HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_10);
 		 state2=state2|RIGHT_ENCODER_A;
 
 		 state2=state2<<1;
-		 RIGHT_ENCODER_B=HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_13);
+		 RIGHT_ENCODER_B=HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_11);
 		 state2=state2|RIGHT_ENCODER_B;
 		 state2=state2 & 0x03;
 
@@ -118,15 +118,15 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 
 
 
-	 else if (GPIO_Pin == GPIO_PIN_13)
+	 else if (GPIO_Pin == GPIO_PIN_11)
 	 {
-		 // chương trình ngắt của chân 13
+		 // chương trình ngắt của chân 11
 
-		 RIGHT_ENCODER_A=HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_12);
+		 RIGHT_ENCODER_A=HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_10);
 		 state3=state3|RIGHT_ENCODER_A;
 
 		 state3=state3<<1;
-		 RIGHT_ENCODER_B=HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_13);
+		 RIGHT_ENCODER_B=HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_11);
 		 state3=state3|RIGHT_ENCODER_B;
 		 state3=state3 & 0x03;
 
@@ -176,12 +176,12 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		cnt=0;
 	}
 }
-
+float CurrentError;
 void PID(float *SetPoint, float* ControlledVariable,float* PidOutput)
 {
 	// PWM mode has the range from 0 to 400.
-	float HighLimit=400;
-	static float ManipulatedVariable,ManipulatedVariableHat,uk,ui,previous_ui,CurrentError;
+	float HighLimit=400,ManipulatedVariable,ManipulatedVariableHat,uk,ui;
+	static float previous_ui;
 
 	// Calculate the error
 	CurrentError=*SetPoint-*ControlledVariable;
@@ -204,10 +204,11 @@ void PID(float *SetPoint, float* ControlledVariable,float* PidOutput)
 		ManipulatedVariableHat=HighLimit;
 		ResetError=ManipulatedVariableHat-ManipulatedVariable;
 		AntiWindupError=Ki*CurrentError+ResetError*Kb;
-		ui=previous_ui+Ki*AntiWindupError*0.8;
+		ui=previous_ui+AntiWindupError*0.1;
 		*PidOutput=uk+ui;
 	}
 	previous_ui=ui;
+
 }
 
 void ReadEncoder()
@@ -218,6 +219,68 @@ void ReadEncoder()
 void ComputeVelocity()
 {
 	void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
+}
+
+void SubcribeVelocityFromRos(float *linear_velocity,float *angular_velocity,float *left_velocity,float *right_velocity)
+{
+
+	// Calculate vel of each wheel
+	*left_velocity  = ((2*(*linear_velocity)-(*angular_velocity)*WHEEL_SEPARATION))/2;  // unit: m/s
+	*right_velocity = ((2*(*linear_velocity)+(*angular_velocity)*WHEEL_SEPARATION))/2;
+
+	//v=omega.r => omega=v/r (rad/s)
+	*left_velocity  = (*left_velocity)/WHEEL_RADIUS;
+	*right_velocity = (*right_velocity)/WHEEL_RADIUS;
+
+	// convert to RPM
+	*left_velocity  = ((*left_velocity)*60)/(2*PI);
+	*right_velocity = ((*right_velocity)*60)/(2*PI);
+
+	// Determine the direction with the sign of value corresponding
+	if((left_velocity>0)&&(right_velocity>0))
+	{
+		  // IN3,IN4 pin	(motor A)
+		  HAL_GPIO_WritePin(GPIOE,GPIO_PIN_8,GPIO_PIN_SET);    // (0,1): < 0: forward. (1,0): >0 : reverse.
+	      HAL_GPIO_WritePin(GPIOE,GPIO_PIN_9,GPIO_PIN_RESET);
+
+		  // IN1,IN2 pin   (motor B)
+		  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,GPIO_PIN_RESET);
+		  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_2,GPIO_PIN_SET);
+	}
+
+	if((left_velocity<0)&&(right_velocity<0))
+	{
+		  // IN3,IN4 pin	(motor A)
+		  HAL_GPIO_WritePin(GPIOE,GPIO_PIN_8,GPIO_PIN_RESET);    // (0,1): < 0: forward. (1,0): >0 : reverse.
+	      HAL_GPIO_WritePin(GPIOE,GPIO_PIN_9,GPIO_PIN_SET);
+
+		  // IN1,IN2 pin   (motor B)
+		  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,GPIO_PIN_SET);
+		  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_2,GPIO_PIN_RESET);
+	}
+
+	if((left_velocity>0)&&(right_velocity<0))
+	{
+		  // IN3,IN4 pin	(motor A)
+		  HAL_GPIO_WritePin(GPIOE,GPIO_PIN_8,GPIO_PIN_SET);    // (0,1): < 0: forward. (1,0): >0 : reverse.
+	      HAL_GPIO_WritePin(GPIOE,GPIO_PIN_9,GPIO_PIN_RESET);
+
+		  // IN1,IN2 pin   (motor B)
+		  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,GPIO_PIN_SET);
+		  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_2,GPIO_PIN_RESET);
+	}
+
+	if((left_velocity<0)&&(right_velocity>0))
+	{
+		  // IN3,IN4 pin	(motor A)
+		  HAL_GPIO_WritePin(GPIOE,GPIO_PIN_8,GPIO_PIN_RESET);    // (0,1): < 0: forward. (1,0): >0 : reverse.
+	      HAL_GPIO_WritePin(GPIOE,GPIO_PIN_9,GPIO_PIN_SET);
+
+		  // IN1,IN2 pin   (motor B)
+		  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,GPIO_PIN_RESET);
+		  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_2,GPIO_PIN_SET);
+	}
+
 }
 
 

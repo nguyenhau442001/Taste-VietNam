@@ -86,10 +86,11 @@ int _write(int file, char *ptr, int len)
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-float PidOut,rpm_right_velocity;
-float SetPoint=10.0;
+float LeftPidOut,RightPidOut;
+//float SetPoint=20.0;
 
-
+float left_vel=10.0,right_vel=10.0;
+float v=0.1,omega=0.0;
 /************* PID parameter ******************/
 
 
@@ -147,9 +148,11 @@ int main(void)
   HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,GPIO_PIN_RESET);
   HAL_GPIO_WritePin(GPIOB,GPIO_PIN_2,GPIO_PIN_SET);
 
+//  SubcribeVelocityFromRos(&v,&omega,&left_vel,&right_vel);
+
   // ENA, ENB
-//	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_3,300);
-//	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_1,100);
+//	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_3,100); // Motor A (left)
+//	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_1,100); // Motor B (right)
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -160,25 +163,19 @@ int main(void)
     MX_USB_HOST_Process();
 
     /* USER CODE BEGIN 3 */
-    ReadEncoder();
-    ComputeVelocity();
-    PID(&SetPoint,&rpm_right_velocity,&PidOut);
-    HAL_Delay(100);
-	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_3,fabs(PidOut));
-	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_1,fabs(PidOut));
 
-//    if((right_count>=0)&&(right_count<5376))
-//    {
-//    __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_3,100);
-//    __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_1,20);
-//    }
-//    else
-//    {
-//    	pos=right_count*360/5376;
-//        __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_3,0);
-//        __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_1,0);
-//
-//    }
+//    ReadEncoder();
+//    ComputeVelocity();
+    previous_tick=HAL_GetTick();
+
+
+    PID(&left_vel,&rpm_left_velocity,&LeftPidOut);
+    PID(&right_vel,&rpm_right_velocity,&RightPidOut);
+    HAL_Delay(100);
+	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_3,fabs(round(LeftPidOut)));
+	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_1,fabs(round(RightPidOut)));
+	current_tick=HAL_GetTick();
+	diff_tick=current_tick-previous_tick;
 
   }
   /* USER CODE END 3 */
