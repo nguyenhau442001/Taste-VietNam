@@ -250,33 +250,33 @@ void SubcribeVelocityFromRos(float *linear_velocity,float *angular_velocity,floa
 
 	if((left_velocity<0)&&(right_velocity<0))
 	{
-		  // IN3,IN4 pin	(motor A)
+		  // IN1,IN2 pin    (motor A)
 		  HAL_GPIO_WritePin(GPIOE,GPIO_PIN_8,GPIO_PIN_RESET);    // (0,1): < 0: forward. (1,0): >0 : reverse.
 	      HAL_GPIO_WritePin(GPIOE,GPIO_PIN_9,GPIO_PIN_SET);
 
-		  // IN1,IN2 pin   (motor B)
+		  // IN3,IN4 pin	(motor B)
 		  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,GPIO_PIN_SET);
 		  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_2,GPIO_PIN_RESET);
 	}
 
 	if((left_velocity>0)&&(right_velocity<0))
 	{
-		  // IN3,IN4 pin	(motor A)
+		  // IN1,IN2 pin    (motor A)
 		  HAL_GPIO_WritePin(GPIOE,GPIO_PIN_8,GPIO_PIN_SET);    // (0,1): < 0: forward. (1,0): >0 : reverse.
 	      HAL_GPIO_WritePin(GPIOE,GPIO_PIN_9,GPIO_PIN_RESET);
 
-		  // IN1,IN2 pin   (motor B)
+		  // IN3,IN4 pin	(motor B)
 		  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,GPIO_PIN_SET);
 		  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_2,GPIO_PIN_RESET);
 	}
 
 	if((left_velocity<0)&&(right_velocity>0))
 	{
-		  // IN3,IN4 pin	(motor A)
+		  // IN1,IN2 pin    (motor A)
 		  HAL_GPIO_WritePin(GPIOE,GPIO_PIN_8,GPIO_PIN_RESET);    // (0,1): < 0: forward. (1,0): >0 : reverse.
 	      HAL_GPIO_WritePin(GPIOE,GPIO_PIN_9,GPIO_PIN_SET);
 
-		  // IN1,IN2 pin   (motor B)
+		  // IN3,IN4 pin	(motor B)
 		  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,GPIO_PIN_RESET);
 		  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_2,GPIO_PIN_SET);
 	}

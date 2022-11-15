@@ -2657,7 +2657,7 @@ void SubcribeVelocityFromRos(float *linear_velocity,float *angular_velocity,floa
  8001a6c:	f44f 7100 	mov.w	r1, #512	; 0x200
  8001a70:	4807      	ldr	r0, [pc, #28]	; (8001a90 <SubcribeVelocityFromRos+0x1c8>)
  8001a72:	f001 faff 	bl	8003074 <HAL_GPIO_WritePin>
-		  // IN1,IN2 pin   (motor B)
+		  // IN3,IN4 pin	(motor B)
 		  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,GPIO_PIN_RESET);
 		  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_2,GPIO_PIN_SET);
 	}
