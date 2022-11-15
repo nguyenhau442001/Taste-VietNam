@@ -89,8 +89,8 @@ int _write(int file, char *ptr, int len)
 float LeftPidOut,RightPidOut;
 //float SetPoint=20.0;
 
-float left_vel=10.0,right_vel=10.0;
-float v=0.1,omega=0.0;
+float left_vel,right_vel;
+float v=0.01,omega=0.0;
 /************* PID parameter ******************/
 
 
@@ -148,7 +148,7 @@ int main(void)
   HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,GPIO_PIN_RESET);
   HAL_GPIO_WritePin(GPIOB,GPIO_PIN_2,GPIO_PIN_SET);
 
-//  SubcribeVelocityFromRos(&v,&omega,&left_vel,&right_vel);
+  SubcribeVelocityFromRos(&v,&omega,&left_vel,&right_vel);
 
   // ENA, ENB
 //	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_3,100); // Motor A (left)
