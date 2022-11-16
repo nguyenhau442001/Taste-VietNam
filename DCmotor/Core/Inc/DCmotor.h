@@ -28,18 +28,18 @@
 /* PID Structure */
 typedef struct
 {
-	double Kp; // default: 0.229
-	double Ki; // default: 15.3
-	double Kb; // default: 22.222
-	double PidOutput;
+	float Kp; // default: 0.229
+	float Ki; // default: 15.3
+	float Kb; // default: 22.222
+	float PidOutput;
 }PID_TypeDef;
 
 /* Error Structure */
 typedef struct
 {
-	double CurrentError;
-	double AntiWindupError;
-	double ResetError;
+	float CurrentError;
+	float AntiWindupError;
+	float ResetError;
 }Error_TypeDef;
 
 
@@ -47,6 +47,7 @@ void ReadEncoder();
 void ComputeVelocity();
 void PID(PID_TypeDef *uPID,Error_TypeDef *Error,float Kp, float Ki, float Kb, double SetPoint, double ControlledVariable,float *PidOutput);
 void SubcribeVelocityFromRos(const double linear_velocity,const double angular_velocity);
+
 
 
 

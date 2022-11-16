@@ -12,10 +12,10 @@
 int current_tick, previous_tick,diff_tick;
 int right_count,left_count,right_previous,left_previous,cnt;
 
-double ActualAngularVelocity[2];
-double ActualLinearVelocity[2]   ;
-double SetPointLinearVelocity[2] ;
-double SetPointAngularVelocity[2];
+float ActualAngularVelocity[2];
+float ActualLinearVelocity[2]   ;
+float SetPointLinearVelocity[2] ;
+float SetPointAngularVelocity[2];
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {

@@ -26,11 +26,11 @@ char hello[] = "Hello Taste VN!";
 /********** Declare subscriber **********/
 ros::Subscriber<geometry_msgs::Twist> cmd_vel_sub("cmd_vel", commandVelocityCallback);
 
-float LeftPidOut,RightPidOut;
+float PidOut[2];
 
 /********** Extern variables **********/
-extern double SetPointAngularVelocity[2];
-extern double ActualAngularVelocity[2]  ;
+extern float SetPointAngularVelocity[2]={17.0,17.0};
+extern float ActualAngularVelocity[2]  ;
 extern TIM_HandleTypeDef htim2;
 extern TIM_HandleTypeDef htim3;
 
@@ -67,13 +67,12 @@ void loop(void)
   ReadEncoder();
   ComputeVelocity();
   SubcribeVelocityFromRos(0.01,0);
-  PID(&uPID,&err,0.229,15.3,22.222,SetPointAngularVelocity[0],ActualAngularVelocity[0],&LeftPidOut);
-//    PID(&right_vel,&rpm_right_velocity,&RightPidOut);
-  HAL_Delay(1000*SAMPLE_TIME);
-	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_3,fabs(LeftPidOut));
-//	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_1,fabs(round(RightPidOut)));
+  PID(&uPID,&err,0.229,15.3,22.222,SetPointAngularVelocity[0],ActualAngularVelocity[0],&PidOut[0]);
+  PID(&uPID,&err,0.229,15.3,22.222,SetPointAngularVelocity[1],ActualAngularVelocity[1],&PidOut[1]);
+    HAL_Delay(1000*SAMPLE_TIME);
+  	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_3,fabs(round(PidOut[0])));
+  	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_1,fabs(round(PidOut[1])));
 
-//	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_3,fabs(round(200)));
   str_msg.data = hello;
   chatter.publish(&str_msg);
   nh.spinOnce();
