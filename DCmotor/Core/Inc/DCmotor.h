@@ -1,25 +1,29 @@
 /*
- * DCmotor.h
- *
- *  Created on: Nov 14, 2022
- *      Author: Nguyen Hau
+------------------------------------------------------------------------------
+~ File       : DCmotor.h
+~ Author     : Nguyen Hau
+~ Created on : Nov 14, 2022
+~ Brief      : This library is aimed to do some works:
+ 	 	 	   1. Read Encoder x2 pulses mode (both falling/rising edge) using external interrupt
+ 	 	 	   2. Calculate the actual velocity (RPM) using Timer 2.
+ 	 	 	   3. Using PID to compute the value PWM corresponding with desired velocity. (using Timer 3 & PI controller )
+ ------------------------------------------------------------------------------
  */
 
 #ifndef DCMOTOR_H_
 #define DCMOTOR_H_
 
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Include ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 #include "stm32f4xx_hal.h"
-#include "stm32f4xx_hal_gpio.h"
-#include "stm32f4xx_hal_tim.h"
 #include "stdio.h"
 #include "stdbool.h"
 #include "math.h"
 
 #define PI 3.141592653589793238462643383279
-#define Kp 0.229
-#define Ki 15.3
+#define Kp 15 //0.229
+#define Ki 15.3 //15.3
 #define Kb 22.222
-#define SAMPLE_TIME 0.1
+#define SAMPLE_TIME 0.05
 #define WHEEL_SEPARATION 0.3
 #define WHEEL_RADIUS 0.05
 

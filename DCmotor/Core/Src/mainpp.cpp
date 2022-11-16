@@ -20,7 +20,7 @@ char hello[] = "Hello Taste VN!";
 ros::Subscriber<geometry_msgs::Twist> cmd_vel_sub("cmd_vel", commandVelocityCallback);
 
 float LeftPidOut,RightPidOut;
-float left_vel,right_vel;
+float left_vel=17,right_vel=17.0;
 float v=0.0,omega=0.0;
 extern float rpm_left_velocity,rpm_right_velocity;
 extern TIM_HandleTypeDef htim2;
@@ -60,12 +60,12 @@ void loop(void)
   ComputeVelocity();
 
   PID(&left_vel,&rpm_left_velocity,&LeftPidOut);
-    PID(&right_vel,&rpm_right_velocity,&RightPidOut);
+//    PID(&right_vel,&rpm_right_velocity,&RightPidOut);
   HAL_Delay(1000*SAMPLE_TIME);
 	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_3,fabs(round(LeftPidOut)));
-	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_1,fabs(round(RightPidOut)));
+//	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_1,fabs(round(RightPidOut)));
 
-//
+//	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_3,fabs(round(200)));
   str_msg.data = hello;
   chatter.publish(&str_msg);
   nh.spinOnce();

@@ -13,7 +13,7 @@ int current_tick, previous_tick,diff_tick;
 int right_count,left_count,right_previous,left_previous,cnt;
 
 
-float previous_rads_left_velocity,rads_left_velocity,previous_rads_right_velocity,rads_right_velocity;
+float previous_rads_left_velocity,rads_left_velocity,previous_rads_right_velocity,rads_right_velocity; // To calculate odom
 float rpm_left_velocity,rpm_right_velocity,previous_rpm_left_velocity,previous_rpm_right_velocity;
 float previous_pos,pos;
 float AntiWindupError,ResetError;
