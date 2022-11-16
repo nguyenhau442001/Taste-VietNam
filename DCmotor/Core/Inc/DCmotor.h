@@ -20,7 +20,6 @@
 #include "math.h"
 
 #define PI 3.141592653589793238462643383279
-#define SAMPLE_TIME 0.05
 #define WHEEL_SEPARATION 0.3
 #define WHEEL_RADIUS 0.05
 #define ENCODER_RESOLUTION 5376
@@ -31,7 +30,7 @@ typedef struct
 	float Kp; // default: 0.229
 	float Ki; // default: 15.3
 	float Kb; // default: 22.222
-	float PidOutput;
+	float SampleTime;
 }PID_TypeDef;
 
 /* Error Structure */
@@ -42,10 +41,32 @@ typedef struct
 	float ResetError;
 }Error_TypeDef;
 
+/* Tick Structure */
+typedef struct
+{
+	int PreviousTick;
+	int CurrentTick;
+	int DifferentTick;
+}Tick_TypeDef;
+
+/* Counter Structure */
+typedef struct
+{
+	int CurrentLeftCount;
+	int CurrentRightCount;
+	int SampleTimeCount;
+}Counter_TypeDef;
+
+/* Status Read Encoder Structure */
+typedef struct
+{
+	int PreviousLeftStatus;
+	int PreviousRightStatus;
+}Status_TypeDef;
 
 void ReadEncoder();
 void ComputeVelocity();
-void PID_Compute(PID_TypeDef *uPID,Error_TypeDef *Error,float Kp, float Ki, float Kb, double SetPoint, double ControlledVariable,float *PidOutput);
+void PID_Compute(PID_TypeDef *uPID,Error_TypeDef *Error,float Kp, float Ki, float Kb, float SampleTime,double SetPoint, double ControlledVariable,float *PidOutput);
 void SubcribeVelocityFromRos(const double linear_velocity,const double angular_velocity);
 
 

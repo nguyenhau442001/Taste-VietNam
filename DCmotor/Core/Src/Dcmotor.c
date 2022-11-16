@@ -9,8 +9,10 @@
 
 #include "DCmotor.h"
 
-int current_tick, previous_tick,diff_tick;
-int right_count,left_count,right_previous,left_previous,cnt;
+
+Counter_TypeDef Count;
+PID_TypeDef uPID;
+Status_TypeDef status;
 
 float ActualAngularVelocity[2];
 float ActualLinearVelocity[2]   ;
@@ -20,73 +22,73 @@ float SetPointAngularVelocity[2];
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
  static unsigned char state0,state1,state2,state3;
- static bool LEFT_ENCODER_A,RIGHT_ENCODER_A, LEFT_ENCODER_B,RIGHT_ENCODER_B;
+ static bool Left_Channel_A_Status,Left_Channel_B_Status, Right_Channel_A_Status,Right_Channel_B_Status; //falling or rising edge
  /* MOTOR A */
  if (GPIO_Pin == GPIO_PIN_12)
  {
    // chương trình ngắt của chân 12
 
-	 LEFT_ENCODER_A=HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_12);
-	 state0=state0|LEFT_ENCODER_A;
+	 Left_Channel_A_Status=HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_12);
+	 state0=state0|Left_Channel_A_Status;
 
 	 state0=state0<<1;
-	 LEFT_ENCODER_B=HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_13);
-	 state0=state0|LEFT_ENCODER_B;
+	 Left_Channel_B_Status=HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_13);
+	 state0=state0|Left_Channel_B_Status;
 	 state0=state0 & 0x03;
 
 	 switch(state0)
 	 {
 		 	 	 	 	 case 0:
-							 	 if(left_previous==1){left_count++;}
-							 	 if(left_previous==2) {left_count--;}
+							 	 if(status.PreviousLeftStatus==1) {Count.CurrentLeftCount++;}
+							 	 if(status.PreviousLeftStatus==2) {Count.CurrentLeftCount--;}
 							 	 break;
 		 	 	 	 	 case 1:
-		 	 	 	 		 	 if(left_previous==3){left_count++;}
-		 	 	 	 		 	 if(left_previous==0){left_count--;}
+		 	 	 	 		 	 if(status.PreviousLeftStatus==3) {Count.CurrentLeftCount++;}
+		 	 	 	 		 	 if(status.PreviousLeftStatus==0) {Count.CurrentLeftCount--;}
 		 	 	 	 		 	 break;
 		 	 	 	 	 case 2:
-		 	 	 	 		 	 if(left_previous==0){left_count++;}
-		 	 	 	 		 	 if(left_previous==3) {left_count--;}
+		 	 	 	 		 	 if(status.PreviousLeftStatus==0) {Count.CurrentLeftCount++;}
+		 	 	 	 		 	 if(status.PreviousLeftStatus==3) {Count.CurrentLeftCount--;}
 		 	 	 	 		 	 break;
 		 	 	 	 	 case 3:
-		 	 	 	 		 	 if(left_previous==2){left_count++;}
-		 	 	 	 		 	 if(left_previous==1) {left_count--;}
+		 	 	 	 		 	 if(status.PreviousLeftStatus==2) {Count.CurrentLeftCount++;}
+		 	 	 	 		 	 if(status.PreviousLeftStatus==1) {Count.CurrentLeftCount--;}
 		 	 	 	 		 	 break;
 	 }
-	 left_previous=state0;
+	 	 status.PreviousLeftStatus = state0;
  	 }
 
 	 else if (GPIO_Pin == GPIO_PIN_13)
 	 {
 	   // chương trình ngắt của chân 13
-		 LEFT_ENCODER_A=HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_12);
-		 state1=state1|LEFT_ENCODER_A;
+		 Left_Channel_A_Status=HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_12);
+		 state1=state1|Left_Channel_A_Status;
 
 		 state1=state1<<1;
-		 LEFT_ENCODER_B=HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_13);
-		 state1=state1|LEFT_ENCODER_B;
+		 Left_Channel_B_Status=HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_13);
+		 state1=state1|Left_Channel_B_Status;
 		 state1=state1 & 0x03;
 
 		 switch(state1)
 		 {
 		 	 	 	 	 case 0:
-							 	 if(left_previous==1){left_count++;}
-							 	 if(left_previous==2) {left_count--;}
-							 	 break;
-		 	 	 	 	 case 1:
-		 	 	 	 		 	 if(left_previous==3){left_count++;}
-		 	 	 	 		 	 if(left_previous==0){left_count--;}
-		 	 	 	 		 	 break;
-		 	 	 	 	 case 2:
-		 	 	 	 		 	 if(left_previous==0){left_count++;}
-		 	 	 	 		 	 if(left_previous==3) {left_count--;}
-		 	 	 	 		 	 break;
-		 	 	 	 	 case 3:
-		 	 	 	 		 	 if(left_previous==2){left_count++;}
-		 	 	 	 		 	 if(left_previous==1) {left_count--;}
-		 	 	 	 		 	 break;
+		 	 	 	 		 	 if(status.PreviousLeftStatus==1) {Count.CurrentLeftCount++;}
+		 	 	 	 		 	 if(status.PreviousLeftStatus==2) {Count.CurrentLeftCount--;}
+						 	 	 break;
+	 	 	 	 		 case 1:
+	 	 	 	 		 	 	 if(status.PreviousLeftStatus==3) {Count.CurrentLeftCount++;}
+	 	 	 	 		 	 	 if(status.PreviousLeftStatus==0) {Count.CurrentLeftCount--;}
+	 	 	 	 		 	 	 break;
+	 	 	 	 		 case 2:
+	 	 	 	 			 	 if(status.PreviousLeftStatus==0) {Count.CurrentLeftCount++;}
+	 	 	 	 			 	 if(status.PreviousLeftStatus==3) {Count.CurrentLeftCount--;}
+	 	 	 	 			 	 break;
+	 	 	 	 		 case 3:
+	 	 	 	 		 	 	 if(status.PreviousLeftStatus==2) {Count.CurrentLeftCount++;}
+	 	 	 	 		 	 	 if(status.PreviousLeftStatus==1) {Count.CurrentLeftCount--;}
+	 	 	 	 		 	 	 break;
 		 }
-		 left_previous=state1;
+		 status.PreviousLeftStatus = state1;
 	 }
 
  	 /* MOTOR B */
@@ -94,34 +96,34 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	 {
 		 // chương trình ngắt của chân 10
 
-		 RIGHT_ENCODER_A=HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_10);
-		 state2=state2|RIGHT_ENCODER_A;
+		 Right_Channel_A_Status=HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_10);
+		 state2=state2|Right_Channel_A_Status;
 
 		 state2=state2<<1;
-		 RIGHT_ENCODER_B=HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_11);
-		 state2=state2|RIGHT_ENCODER_B;
+		 Right_Channel_B_Status=HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_11);
+		 state2=state2|Right_Channel_B_Status;
 		 state2=state2 & 0x03;
 
 		 switch(state2)
 		 {
-	 	 	 case 0:
-				 if(right_previous==1){right_count++;}
-				 if(right_previous==2){right_count--;}
-				 break;
-	 	 	 case 1:
-	 	 		 	 if(right_previous==3){right_count++;}
-	 	 		 	 if(right_previous==0){right_count--;}
-	 	 		 	 break;
-	 	 	 case 2:
-	 	 		 	 if(right_previous==0){right_count++;}
-	 	 		 	 if(right_previous==3) {right_count--;}
-	 	 		 	 break;
-	 	 	 case 3:
-	 	 		 	 if(right_previous==2){right_count++;}
-	 	 		 	 if(right_previous==1) {right_count--;}
-	 	 		 	 break;
+		 	 	 	 	 case 0:
+		 	 	 	 		 	 if(status.PreviousRightStatus==1) {Count.CurrentRightCount++;}
+		 	 	 	 		 	 if(status.PreviousRightStatus==2) {Count.CurrentRightCount--;}
+		 	 	 	 		 	 break;
+		 	 	 	 	 case 1:
+		 	 	 	 		 	 if(status.PreviousRightStatus==3) {Count.CurrentRightCount++;}
+		 	 	 	 		 	 if(status.PreviousRightStatus==0) {Count.CurrentRightCount--;}
+		 	 	 	 		 	 break;
+		 	 	 	 	 case 2:
+		 	 	 	 		 	 if(status.PreviousRightStatus==0) {Count.CurrentRightCount++;}
+		 	 	 	 		 	 if(status.PreviousRightStatus==3) {Count.CurrentRightCount--;}
+		 	 	 	 		 	 break;
+		 	 	 	 	 case 3:
+		 	 	 	 		 	 if(status.PreviousRightStatus==2) {Count.CurrentRightCount++;}
+		 	 	 	 		 	 if(status.PreviousRightStatus==1) {Count.CurrentRightCount--;}
+		 	 	 	 		 	 break;
 		 }
-		 right_previous=state2;
+		 status.PreviousRightStatus = state2;
  }
 
 
@@ -130,66 +132,64 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	 {
 		 // chương trình ngắt của chân 11
 
-		 RIGHT_ENCODER_A=HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_10);
-		 state3=state3|RIGHT_ENCODER_A;
+		 Right_Channel_A_Status=HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_10);
+		 state3=state3|Right_Channel_A_Status;
 
 		 state3=state3<<1;
-		 RIGHT_ENCODER_B=HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_11);
-		 state3=state3|RIGHT_ENCODER_B;
+		 Right_Channel_B_Status=HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_11);
+		 state3=state3|Right_Channel_B_Status;
 		 state3=state3 & 0x03;
 
 		 switch(state3)
 		 {
-		 	 	 	 	 case 0:
-								 if(right_previous==1){right_count++;}
-								 if(right_previous==2){right_count--;}
-								 break;
-		 	 	 	 	 case 1:
-		 	 	 	 		 	 if(right_previous==3){right_count++;}
-		 	 	 	 		 	 if(right_previous==0){right_count--;}
-		 	 	 	 		 	 break;
-		 	 	 	 	 case 2:
-		 	 	 	 		 	 if(right_previous==0){right_count++;}
-		 	 	 	 		 	 if(right_previous==3) {right_count--;}
-		 	 	 	 		 	 break;
-		 	 	 	 	 case 3:
-		 	 	 	 		 	 if(right_previous==2){right_count++;}
-		 	 	 	 		 	 if(right_previous==1) {right_count--;}
-		 	 	 	 		 	 break;
+		 	 	 	 case 0:
+		 	 	 		 	 if(status.PreviousRightStatus==1) {Count.CurrentRightCount++;}
+		 	 	 		 	 if(status.PreviousRightStatus==2) {Count.CurrentRightCount--;}
+		 	 	 		 	 break;
+		 	 	 	 case 1:
+		 	 	 		 	 if(status.PreviousRightStatus==3) {Count.CurrentRightCount++;}
+		 	 	 		 	 if(status.PreviousRightStatus==0) {Count.CurrentRightCount--;}
+		 	 	 		 	 break;
+		 	 	 	 case 2:
+		 	 	 		 	 if(status.PreviousRightStatus==0) {Count.CurrentRightCount++;}
+		 	 	 		 	 if(status.PreviousRightStatus==3) {Count.CurrentRightCount--;}
+		 	 	 		 	 break;
+		 	 	 	 case 3:
+		 	 	 		 	 if(status.PreviousRightStatus==2) {Count.CurrentRightCount++;}
+		 	 	 		 	 if(status.PreviousRightStatus==1) {Count.CurrentRightCount--;}
+		 	 	 		 	 break;
 		 }
-		 right_previous=state3;
-	 }
+		 status.PreviousRightStatus = state3;
+	     }
 }
-
-
 
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-	cnt++;
-	if(cnt==(1000*SAMPLE_TIME)) //1 cnt = 0.001s, default:100 = 0.1s
+	Count.SampleTimeCount++;
+	if(Count.SampleTimeCount == 1000*(uPID.SampleTime)) //1 cnt = 0.001s, default:100 = 0.1s
 	{
 
-		ActualAngularVelocity[0]   = left_count * 60  / (ENCODER_RESOLUTION*0.001*cnt);
-		ActualAngularVelocity[1]   = right_count* 60  / (ENCODER_RESOLUTION*0.001*cnt);
+		ActualAngularVelocity[0]   = Count.CurrentLeftCount * 60  / (ENCODER_RESOLUTION*0.001*Count.SampleTimeCount);
+		ActualAngularVelocity[1]   = Count.CurrentRightCount* 60  / (ENCODER_RESOLUTION*0.001*Count.SampleTimeCount);
 
-		left_count=0;
-		right_count=0;
-		cnt=0;
+		Count.CurrentLeftCount=0;
+		Count.CurrentRightCount=0;
+		Count.SampleTimeCount=0;
 	}
 }
-float CurrentError;
-void PID_Compute(PID_TypeDef *uPID,Error_TypeDef *Error,float Kp, float Ki, float Kb, double SetPoint, double ControlledVariable,float *PidOutput)
+
+void PID_Compute(PID_TypeDef *uPID,Error_TypeDef *Error,float Kp, float Ki, float Kb, float SampleTime,double SetPoint, double ControlledVariable,float *PidOutput)
 {
 	// PWM mode has the range from 0 to 400.
 	float HighLimit = 400, PWM, PWM_hat, uk, ui;
 	static float previous_ui;
 
 	/* ~~~~~~~~~~ Set parameter ~~~~~~~~~~ */
-	uPID->Kp = Kp;
-	uPID->Ki = Ki;
-	uPID->Kb = Kb;
-
+	uPID->Kp		= Kp;
+	uPID->Ki 		= Ki;
+	uPID->Kb 		= Kb;
+	uPID->SampleTime= SampleTime;
 	// Calculate the error
 	Error->CurrentError= SetPoint-fabs(ControlledVariable);
 
@@ -197,10 +197,11 @@ void PID_Compute(PID_TypeDef *uPID,Error_TypeDef *Error,float Kp, float Ki, floa
 	uk = (uPID->Kp) * (Error->CurrentError);
 
 	// Integration
-	ui = previous_ui + (uPID->Ki) * (Error->CurrentError) * SAMPLE_TIME;
+	ui = previous_ui + (uPID->Ki) * (Error->CurrentError) * (uPID->SampleTime);
 
 	PWM = ui+uk;
 
+	// Anti wind-up for Integration
 	if(PWM < HighLimit)
 	{
 		PWM_hat = PWM;
@@ -208,7 +209,6 @@ void PID_Compute(PID_TypeDef *uPID,Error_TypeDef *Error,float Kp, float Ki, floa
 		Error-> ResetError  = 0;
 
 		*PidOutput   = PWM;
-		uPID->PidOutput=PWM;
 	}
 
 	if(PWM > HighLimit)
@@ -219,7 +219,7 @@ void PID_Compute(PID_TypeDef *uPID,Error_TypeDef *Error,float Kp, float Ki, floa
 
 		Error->AntiWindupError = (uPID->Ki) * (Error->CurrentError) + (Error->ResetError)*(uPID->Kb);
 
-		ui=previous_ui + (Error->AntiWindupError) * SAMPLE_TIME;
+		ui=previous_ui + (Error->AntiWindupError) * (uPID->SampleTime);
 
 		*PidOutput = uk+ui;
 	}
@@ -240,9 +240,9 @@ void ComputeVelocity()
 void SubcribeVelocityFromRos(const double linear_velocity,const double angular_velocity)
 {
 
-	// Calculate vel of each wheel
-	SetPointLinearVelocity[0]    = (2*linear_velocity-angular_velocity*WHEEL_SEPARATION)/2;  // unit: m/s
-	SetPointLinearVelocity[1]    = (2*linear_velocity+angular_velocity*WHEEL_SEPARATION)/2;
+	// Calculate vel of each wheel [0]: left, [1]: right
+	SetPointLinearVelocity[0]    =  (2*linear_velocity-angular_velocity*WHEEL_SEPARATION)/2;  // unit: m/s
+	SetPointLinearVelocity[1]    =  (2*linear_velocity+angular_velocity*WHEEL_SEPARATION)/2;
 
 	//v=omega.r => omega=v/r (rad/s)
 	SetPointAngularVelocity[0]   =  SetPointLinearVelocity[0] /WHEEL_RADIUS;

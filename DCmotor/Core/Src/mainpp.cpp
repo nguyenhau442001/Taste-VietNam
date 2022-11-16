@@ -13,7 +13,7 @@
 #include <stm32f4xx_hal_tim.h>
 
 /********** Declare struct **********/
-PID_TypeDef uPID;
+extern PID_TypeDef uPID;
 Error_TypeDef err;
 
 ros::NodeHandle nh;
@@ -68,11 +68,11 @@ void loop(void)
   ComputeVelocity();
   SubcribeVelocityFromRos(0.01,0);
 
-  PID_Compute(&uPID,&err,0.229,15.3,22.222,SetPointAngularVelocity[0],ActualAngularVelocity[0],&PidOut[0]);
-  PID_Compute(&uPID,&err,0.229,15.3,22.222,SetPointAngularVelocity[1],ActualAngularVelocity[1],&PidOut[1]);
-    HAL_Delay(1000*SAMPLE_TIME);
+  PID_Compute(&uPID,&err,0.229,15.3,22.222,0.05,SetPointAngularVelocity[0],ActualAngularVelocity[0],&PidOut[0]);
+//  PID_Compute(&uPID,&err,0.229,15.3,22.222,0.05,SetPointAngularVelocity[1],ActualAngularVelocity[1],&PidOut[1]);
+    HAL_Delay(1000*(uPID.SampleTime));
   	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_3,fabs(round(PidOut[0])));
-  	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_1,fabs(round(PidOut[1])));
+//  	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_1,fabs(round(PidOut[1])));
 
   str_msg.data = hello;
   chatter.publish(&str_msg);
