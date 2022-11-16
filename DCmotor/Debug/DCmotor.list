@@ -27,23 +27,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000030  00000000  00000000  00030218  2**0
                   CONTENTS, READONLY
- 12 .debug_info   0002ae34  00000000  00000000  00030248  2**0
+ 12 .debug_info   0002ae33  00000000  00000000  00030248  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 000055a3  00000000  00000000  0005b07c  2**0
+ 13 .debug_abbrev 00005573  00000000  00000000  0005b07b  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 00001d48  00000000  00000000  00060620  2**3
+ 14 .debug_aranges 00001d48  00000000  00000000  000605f0  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_ranges 00001ba0  00000000  00000000  00062368  2**3
+ 15 .debug_ranges 00001ba0  00000000  00000000  00062338  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  0001dc55  00000000  00000000  00063f08  2**0
+ 16 .debug_macro  0001dc55  00000000  00000000  00063ed8  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   00025ace  00000000  00000000  00081b5d  2**0
+ 17 .debug_line   00025acc  00000000  00000000  00081b2d  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    000a1590  00000000  00000000  000a762b  2**0
+ 18 .debug_str    000a159c  00000000  00000000  000a75f9  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000050  00000000  00000000  00148bbb  2**0
+ 19 .comment      00000050  00000000  00000000  00148b95  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00008f14  00000000  00000000  00148c0c  2**2
+ 20 .debug_frame  00008f14  00000000  00000000  00148be8  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -2148,9 +2148,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
  80015d0:	20001728 	.word	0x20001728
  80015d4:	2000170c 	.word	0x2000170c
 
-080015d8 <PID>:
+080015d8 <PID_Compute>:
 float CurrentError;
-void PID(PID_TypeDef *uPID,Error_TypeDef *Error,float Kp, float Ki, float Kb, double SetPoint, double ControlledVariable,float *PidOutput)
+void PID_Compute(PID_TypeDef *uPID,Error_TypeDef *Error,float Kp, float Ki, float Kb, double SetPoint, double ControlledVariable,float *PidOutput)
 {
  80015d8:	b5b0      	push	{r4, r5, r7, lr}
  80015da:	b090      	sub	sp, #64	; 0x40
@@ -2165,7 +2165,7 @@ void PID(PID_TypeDef *uPID,Error_TypeDef *Error,float Kp, float Ki, float Kb, do
  80015f6:	613a      	str	r2, [r7, #16]
 	// PWM mode has the range from 0 to 400.
 	float HighLimit = 400, PWM, PWM_hat, uk, ui;
- 80015f8:	4b63      	ldr	r3, [pc, #396]	; (8001788 <PID+0x1b0>)
+ 80015f8:	4b63      	ldr	r3, [pc, #396]	; (8001788 <PID_Compute+0x1b0>)
  80015fa:	63bb      	str	r3, [r7, #56]	; 0x38
 	static float previous_ui;
 
@@ -2212,7 +2212,7 @@ void PID(PID_TypeDef *uPID,Error_TypeDef *Error,float Kp, float Ki, float Kb, do
 
 	// Integration
 	ui = previous_ui + (uPID->Ki) * (Error->CurrentError) * SAMPLE_TIME;
- 8001648:	4b50      	ldr	r3, [pc, #320]	; (800178c <PID+0x1b4>)
+ 8001648:	4b50      	ldr	r3, [pc, #320]	; (800178c <PID_Compute+0x1b4>)
  800164a:	681b      	ldr	r3, [r3, #0]
  800164c:	4618      	mov	r0, r3
  800164e:	f7fe ff83 	bl	8000558 <__aeabi_f2d>
@@ -2225,7 +2225,7 @@ void PID(PID_TypeDef *uPID,Error_TypeDef *Error,float Kp, float Ki, float Kb, do
  8001662:	ee67 7a27 	vmul.f32	s15, s14, s15
  8001666:	ee17 0a90 	vmov	r0, s15
  800166a:	f7fe ff75 	bl	8000558 <__aeabi_f2d>
- 800166e:	a344      	add	r3, pc, #272	; (adr r3, 8001780 <PID+0x1a8>)
+ 800166e:	a344      	add	r3, pc, #272	; (adr r3, 8001780 <PID_Compute+0x1a8>)
  8001670:	e9d3 2300 	ldrd	r2, r3, [r3]
  8001674:	f7fe ffc8 	bl	8000608 <__aeabi_dmul>
  8001678:	4602      	mov	r2, r0
@@ -2252,7 +2252,7 @@ void PID(PID_TypeDef *uPID,Error_TypeDef *Error,float Kp, float Ki, float Kb, do
  80016a8:	edd7 7a0e 	vldr	s15, [r7, #56]	; 0x38
  80016ac:	eeb4 7ae7 	vcmpe.f32	s14, s15
  80016b0:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
- 80016b4:	d50b      	bpl.n	80016ce <PID+0xf6>
+ 80016b4:	d50b      	bpl.n	80016ce <PID_Compute+0xf6>
 	{
 		PWM_hat = PWM;
  80016b6:	6b3b      	ldr	r3, [r7, #48]	; 0x30
@@ -2278,7 +2278,7 @@ void PID(PID_TypeDef *uPID,Error_TypeDef *Error,float Kp, float Ki, float Kb, do
  80016d2:	edd7 7a0e 	vldr	s15, [r7, #56]	; 0x38
  80016d6:	eeb4 7ae7 	vcmpe.f32	s14, s15
  80016da:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
- 80016de:	dd47      	ble.n	8001770 <PID+0x198>
+ 80016de:	dd47      	ble.n	8001770 <PID_Compute+0x198>
 	{
 		PWM_hat = HighLimit;
  80016e0:	6bbb      	ldr	r3, [r7, #56]	; 0x38
@@ -2307,7 +2307,7 @@ void PID(PID_TypeDef *uPID,Error_TypeDef *Error,float Kp, float Ki, float Kb, do
  800171c:	edc3 7a01 	vstr	s15, [r3, #4]
 
 		ui=previous_ui + (Error->AntiWindupError) * SAMPLE_TIME;
- 8001720:	4b1a      	ldr	r3, [pc, #104]	; (800178c <PID+0x1b4>)
+ 8001720:	4b1a      	ldr	r3, [pc, #104]	; (800178c <PID_Compute+0x1b4>)
  8001722:	681b      	ldr	r3, [r3, #0]
  8001724:	4618      	mov	r0, r3
  8001726:	f7fe ff17 	bl	8000558 <__aeabi_f2d>
@@ -2317,7 +2317,7 @@ void PID(PID_TypeDef *uPID,Error_TypeDef *Error,float Kp, float Ki, float Kb, do
  8001730:	685b      	ldr	r3, [r3, #4]
  8001732:	4618      	mov	r0, r3
  8001734:	f7fe ff10 	bl	8000558 <__aeabi_f2d>
- 8001738:	a311      	add	r3, pc, #68	; (adr r3, 8001780 <PID+0x1a8>)
+ 8001738:	a311      	add	r3, pc, #68	; (adr r3, 8001780 <PID_Compute+0x1a8>)
  800173a:	e9d3 2300 	ldrd	r2, r3, [r3]
  800173e:	f7fe ff63 	bl	8000608 <__aeabi_dmul>
  8001742:	4602      	mov	r2, r0
@@ -2341,7 +2341,7 @@ void PID(PID_TypeDef *uPID,Error_TypeDef *Error,float Kp, float Ki, float Kb, do
  800176c:	edc3 7a00 	vstr	s15, [r3]
 	}
 	previous_ui=ui;
- 8001770:	4a06      	ldr	r2, [pc, #24]	; (800178c <PID+0x1b4>)
+ 8001770:	4a06      	ldr	r2, [pc, #24]	; (800178c <PID_Compute+0x1b4>)
  8001772:	6bfb      	ldr	r3, [r7, #60]	; 0x3c
  8001774:	6013      	str	r3, [r2, #0]
 
@@ -8192,7 +8192,8 @@ void loop(void)
  800414c:	ed9f 1b3c 	vldr	d1, [pc, #240]	; 8004240 <loop+0x128>
  8004150:	ed9f 0b3d 	vldr	d0, [pc, #244]	; 8004248 <loop+0x130>
  8004154:	f7fd fb2c 	bl	80017b0 <SubcribeVelocityFromRos>
-  PID(&uPID,&err,0.229,15.3,22.222,SetPointAngularVelocity[0],ActualAngularVelocity[0],&PidOut[0]);
+
+  PID_Compute(&uPID,&err,0.229,15.3,22.222,SetPointAngularVelocity[0],ActualAngularVelocity[0],&PidOut[0]);
  8004158:	4b3e      	ldr	r3, [pc, #248]	; (8004254 <loop+0x13c>)
  800415a:	681b      	ldr	r3, [r3, #0]
  800415c:	4618      	mov	r0, r3
@@ -8211,8 +8212,8 @@ void loop(void)
  8004182:	ed9f 0a39 	vldr	s0, [pc, #228]	; 8004268 <loop+0x150>
  8004186:	4939      	ldr	r1, [pc, #228]	; (800426c <loop+0x154>)
  8004188:	4839      	ldr	r0, [pc, #228]	; (8004270 <loop+0x158>)
- 800418a:	f7fd fa25 	bl	80015d8 <PID>
-  PID(&uPID,&err,0.229,15.3,22.222,SetPointAngularVelocity[1],ActualAngularVelocity[1],&PidOut[1]);
+ 800418a:	f7fd fa25 	bl	80015d8 <PID_Compute>
+  PID_Compute(&uPID,&err,0.229,15.3,22.222,SetPointAngularVelocity[1],ActualAngularVelocity[1],&PidOut[1]);
  800418e:	4b31      	ldr	r3, [pc, #196]	; (8004254 <loop+0x13c>)
  8004190:	685b      	ldr	r3, [r3, #4]
  8004192:	4618      	mov	r0, r3
@@ -8231,7 +8232,7 @@ void loop(void)
  80041b8:	ed9f 0a2b 	vldr	s0, [pc, #172]	; 8004268 <loop+0x150>
  80041bc:	492b      	ldr	r1, [pc, #172]	; (800426c <loop+0x154>)
  80041be:	482c      	ldr	r0, [pc, #176]	; (8004270 <loop+0x158>)
- 80041c0:	f7fd fa0a 	bl	80015d8 <PID>
+ 80041c0:	f7fd fa0a 	bl	80015d8 <PID_Compute>
     HAL_Delay(1000*SAMPLE_TIME);
  80041c4:	2032      	movs	r0, #50	; 0x32
  80041c6:	f001 fbc5 	bl	8005954 <HAL_Delay>

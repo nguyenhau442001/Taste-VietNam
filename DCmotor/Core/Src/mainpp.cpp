@@ -67,8 +67,9 @@ void loop(void)
   ReadEncoder();
   ComputeVelocity();
   SubcribeVelocityFromRos(0.01,0);
-  PID(&uPID,&err,0.229,15.3,22.222,SetPointAngularVelocity[0],ActualAngularVelocity[0],&PidOut[0]);
-  PID(&uPID,&err,0.229,15.3,22.222,SetPointAngularVelocity[1],ActualAngularVelocity[1],&PidOut[1]);
+
+  PID_Compute(&uPID,&err,0.229,15.3,22.222,SetPointAngularVelocity[0],ActualAngularVelocity[0],&PidOut[0]);
+  PID_Compute(&uPID,&err,0.229,15.3,22.222,SetPointAngularVelocity[1],ActualAngularVelocity[1],&PidOut[1]);
     HAL_Delay(1000*SAMPLE_TIME);
   	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_3,fabs(round(PidOut[0])));
   	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_1,fabs(round(PidOut[1])));

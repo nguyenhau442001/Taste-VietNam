@@ -45,7 +45,7 @@ typedef struct
 
 void ReadEncoder();
 void ComputeVelocity();
-void PID(PID_TypeDef *uPID,Error_TypeDef *Error,float Kp, float Ki, float Kb, double SetPoint, double ControlledVariable,float *PidOutput);
+void PID_Compute(PID_TypeDef *uPID,Error_TypeDef *Error,float Kp, float Ki, float Kb, double SetPoint, double ControlledVariable,float *PidOutput);
 void SubcribeVelocityFromRos(const double linear_velocity,const double angular_velocity);
 
 
