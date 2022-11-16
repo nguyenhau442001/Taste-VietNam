@@ -20,29 +20,38 @@
 #include "math.h"
 
 #define PI 3.141592653589793238462643383279
-#define Kp 15 //0.229
-#define Ki 15.3 //15.3
-#define Kb 22.222
 #define SAMPLE_TIME 0.05
 #define WHEEL_SEPARATION 0.3
 #define WHEEL_RADIUS 0.05
+#define ENCODER_RESOLUTION 5376
+
+/* PID Structure */
+typedef struct
+{
+	double Kp; // default: 0.229
+	double Ki; // default: 15.3
+	double Kb; // default: 22.222
+	double PidOutput;
+}PID_TypeDef;
+
+/* Error Structure */
+typedef struct
+{
+	double CurrentError;
+	double AntiWindupError;
+	double ResetError;
+}Error_TypeDef;
 
 
 void ReadEncoder();
 void ComputeVelocity();
-void PID(float *SetPoint, float* ControlledVariable,float* PidOutput);
-void SubcribeVelocityFromRos(const double linear_velocity,const double angular_velocity,float *left_velocity,float *right_velocity);
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
+void PID(PID_TypeDef *uPID,Error_TypeDef *Error,float Kp, float Ki, float Kb, double SetPoint, double ControlledVariable,float *PidOutput);
+void SubcribeVelocityFromRos(const double linear_velocity,const double angular_velocity);
 
 
 
 
-/***************TABLE PIN****************/
-/*******| LEFT_ENCODER_A  | PE10 |********/
-/*******| LEFT_ENCODER_B  | PE11 |********/
-/*******| RIGHT_ENCODER_A | PE12 |********/
-/*******| RIGHT_ENCODER_B | PE13 |********/
+
 
 
 

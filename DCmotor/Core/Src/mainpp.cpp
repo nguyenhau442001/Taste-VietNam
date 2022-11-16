@@ -11,24 +11,32 @@
 #include <geometry_msgs/Twist.h>
 #include <stm32f4xx_hal.h>
 #include <stm32f4xx_hal_tim.h>
+
+/********** Declare struct **********/
+PID_TypeDef uPID;
+Error_TypeDef err;
+
 ros::NodeHandle nh;
 
+/********** Declare publisher **********/
 std_msgs::String str_msg;
 ros::Publisher chatter("chatter", &str_msg);
 char hello[] = "Hello Taste VN!";
 
+/********** Declare subscriber **********/
 ros::Subscriber<geometry_msgs::Twist> cmd_vel_sub("cmd_vel", commandVelocityCallback);
 
 float LeftPidOut,RightPidOut;
-float left_vel=17,right_vel=17.0;
-float v=0.0,omega=0.0;
-extern float rpm_left_velocity,rpm_right_velocity;
+
+/********** Extern variables **********/
+extern double SetPointAngularVelocity[2];
+extern double ActualAngularVelocity[2]  ;
 extern TIM_HandleTypeDef htim2;
 extern TIM_HandleTypeDef htim3;
 
 void commandVelocityCallback(const geometry_msgs::Twist& cmd_vel_msg)
 {
-	SubcribeVelocityFromRos(cmd_vel_msg.linear.x,cmd_vel_msg.angular.z,&left_vel,&right_vel);
+	SubcribeVelocityFromRos(0.01,0);
 }
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
@@ -58,11 +66,11 @@ void loop(void)
 
   ReadEncoder();
   ComputeVelocity();
-
-  PID(&left_vel,&rpm_left_velocity,&LeftPidOut);
+  SubcribeVelocityFromRos(0.01,0);
+  PID(&uPID,&err,0.229,15.3,22.222,SetPointAngularVelocity[0],ActualAngularVelocity[0],&LeftPidOut);
 //    PID(&right_vel,&rpm_right_velocity,&RightPidOut);
   HAL_Delay(1000*SAMPLE_TIME);
-	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_3,fabs(round(LeftPidOut)));
+	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_3,fabs(LeftPidOut));
 //	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_1,fabs(round(RightPidOut)));
 
 //	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_3,fabs(round(200)));

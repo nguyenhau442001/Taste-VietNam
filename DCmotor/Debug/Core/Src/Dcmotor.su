@@ -1,6 +1,6 @@
-../Core/Src/DCmotor.c:21:6:HAL_GPIO_EXTI_Callback	16	static
-../Core/Src/DCmotor.c:168:6:HAL_TIM_PeriodElapsedCallback	24	static
-../Core/Src/DCmotor.c:189:6:PID	56	static
-../Core/Src/DCmotor.c:223:6:ReadEncoder	4	static
-../Core/Src/DCmotor.c:228:6:ComputeVelocity	4	static
-../Core/Src/DCmotor.c:233:6:SubcribeVelocityFromRos	40	static
+../Core/Src/DCmotor.c:20:6:HAL_GPIO_EXTI_Callback	16	static
+../Core/Src/DCmotor.c:167:6:HAL_TIM_PeriodElapsedCallback	24	static
+../Core/Src/DCmotor.c:182:6:PID	80	static
+../Core/Src/DCmotor.c:230:6:ReadEncoder	4	static
+../Core/Src/DCmotor.c:235:6:ComputeVelocity	4	static
+../Core/Src/DCmotor.c:240:6:SubcribeVelocityFromRos	32	static

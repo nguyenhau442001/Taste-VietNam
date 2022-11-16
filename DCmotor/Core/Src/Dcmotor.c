@@ -12,11 +12,10 @@
 int current_tick, previous_tick,diff_tick;
 int right_count,left_count,right_previous,left_previous,cnt;
 
-
-float previous_rads_left_velocity,rads_left_velocity,previous_rads_right_velocity,rads_right_velocity; // To calculate odom
-float rpm_left_velocity,rpm_right_velocity,previous_rpm_left_velocity,previous_rpm_right_velocity;
-float previous_pos,pos;
-float AntiWindupError,ResetError;
+double ActualAngularVelocity[2];
+double ActualLinearVelocity[2]   ;
+double SetPointLinearVelocity[2] ;
+double SetPointAngularVelocity[2];
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
@@ -171,50 +170,58 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	if(cnt==(1000*SAMPLE_TIME)) //1 cnt = 0.001s, default:100 = 0.1s
 	{
 
-		rads_left_velocity  = left_count*2*PI/(5376*0.001*cnt);
-		rpm_left_velocity   = left_count*60/(5376*0.001*cnt);
+		ActualAngularVelocity[0]   = left_count * 60  / (ENCODER_RESOLUTION*0.001*cnt);
+		ActualAngularVelocity[1]   = right_count* 60  / (ENCODER_RESOLUTION*0.001*cnt);
 
-		rads_right_velocity = right_count*2*PI/(5376*0.001*cnt);
-		rpm_right_velocity  = right_count*60/(5376*0.001*cnt);
-
-//		pos=previous_pos+right_count*360/5376;
-//		previous_pos=pos;
-		printf("%0.5f\n",rpm_right_velocity);
 		left_count=0;
 		right_count=0;
 		cnt=0;
 	}
 }
 float CurrentError;
-void PID(float *SetPoint, float* ControlledVariable,float* PidOutput)
+void PID(PID_TypeDef *uPID,Error_TypeDef *Error,float Kp, float Ki, float Kb, double SetPoint, double ControlledVariable,float *PidOutput)
 {
 	// PWM mode has the range from 0 to 400.
-	float HighLimit=400,ManipulatedVariable,ManipulatedVariableHat,uk,ui;
+	float HighLimit = 400, PWM, PWM_hat, uk, ui;
 	static float previous_ui;
 
+	/* ~~~~~~~~~~ Set parameter ~~~~~~~~~~ */
+	uPID->Kp = Kp;
+	uPID->Ki = Ki;
+	uPID->Kb = Kb;
+
 	// Calculate the error
-	CurrentError=*SetPoint-fabs(*ControlledVariable);
+	Error->CurrentError= SetPoint-fabs(ControlledVariable);
 
 	// Proportion
-	uk=Kp*CurrentError;
+	uk = (uPID->Kp) * (Error->CurrentError);
 
 	// Integration
-	ui=previous_ui+Ki*CurrentError*SAMPLE_TIME;
-	ManipulatedVariable=ui+uk;
+	ui = previous_ui + (uPID->Ki) * (Error->CurrentError) * SAMPLE_TIME;
 
-	if(ManipulatedVariable<HighLimit)
+	PWM = ui+uk;
+
+	if(PWM < HighLimit)
 	{
-		ManipulatedVariableHat=ManipulatedVariable;
-		ResetError=0;
-		*PidOutput=ManipulatedVariable;
+		PWM_hat = PWM;
+
+		Error-> ResetError  = 0;
+
+		*PidOutput   = PWM;
+		uPID->PidOutput=PWM;
 	}
-	if(ManipulatedVariable>HighLimit)
+
+	if(PWM > HighLimit)
 	{
-		ManipulatedVariableHat=HighLimit;
-		ResetError=ManipulatedVariableHat-ManipulatedVariable;
-		AntiWindupError=Ki*CurrentError+ResetError*Kb;
-		ui=previous_ui+AntiWindupError*SAMPLE_TIME;
-		*PidOutput=uk+ui;
+		PWM_hat = HighLimit;
+
+		Error->ResetError = PWM_hat - PWM;
+
+		Error->AntiWindupError = (uPID->Ki) * (Error->CurrentError) + (Error->ResetError)*(uPID->Kb);
+
+		ui=previous_ui + (Error->AntiWindupError) * SAMPLE_TIME;
+
+		*PidOutput = uk+ui;
 	}
 	previous_ui=ui;
 
@@ -230,66 +237,59 @@ void ComputeVelocity()
 	void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
 }
 
-void SubcribeVelocityFromRos(const double linear_velocity,const double angular_velocity,float *left_velocity,float *right_velocity)
+void SubcribeVelocityFromRos(const double linear_velocity,const double angular_velocity)
 {
 
 	// Calculate vel of each wheel
-	*left_velocity  = ((2*(linear_velocity)-(angular_velocity)*WHEEL_SEPARATION))/2;  // unit: m/s
-	*right_velocity = ((2*(linear_velocity)+(angular_velocity)*WHEEL_SEPARATION))/2;
+	SetPointLinearVelocity[0]    = (2*linear_velocity-angular_velocity*WHEEL_SEPARATION)/2;  // unit: m/s
+	SetPointLinearVelocity[1]    = (2*linear_velocity+angular_velocity*WHEEL_SEPARATION)/2;
 
 	//v=omega.r => omega=v/r (rad/s)
-	*left_velocity  = (*left_velocity)/WHEEL_RADIUS;
-	*right_velocity = (*right_velocity)/WHEEL_RADIUS;
+	SetPointAngularVelocity[0]   =  SetPointLinearVelocity[0] /WHEEL_RADIUS;
+	SetPointAngularVelocity[1]   =  SetPointLinearVelocity[1] /WHEEL_RADIUS;
 
 	// convert to RPM
-	*left_velocity  = ((*left_velocity)*60)/(2*PI);
-	*right_velocity = ((*right_velocity)*60)/(2*PI);
+	SetPointAngularVelocity[0]   = SetPointAngularVelocity[0]*60 /2*PI;
+	SetPointAngularVelocity[1]   = SetPointAngularVelocity[1]*60 /2*PI;
 
 	// Determine the direction with the sign of value corresponding
 	// (0,1): clockwise, (1,0): counter clockwise.
+	// IN1 (PB1), IN2 (PB2) pin    (motor A)
+	// IN3 (PE8), IN4 (PE9) pin	   (motor B)
 
-	if((left_velocity>0)&&(right_velocity>0))
+	if((SetPointLinearVelocity[0]>0) && (SetPointLinearVelocity[1]>0))
 	{
-		  // IN1,IN2 pin    (motor A)
 		  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,GPIO_PIN_SET);
 		  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_2,GPIO_PIN_RESET);
 
-		  // IN3,IN4 pin	(motor B)
 		  HAL_GPIO_WritePin(GPIOE,GPIO_PIN_8,GPIO_PIN_RESET);
 	          HAL_GPIO_WritePin(GPIOE,GPIO_PIN_9,GPIO_PIN_SET);
 	}
 
-	if((left_velocity<0)&&(right_velocity<0))
+	if((SetPointLinearVelocity[0]<0) && (SetPointLinearVelocity[1]<0))
 	{
-		  // IN1,IN2 pin    (motor A)
 		  HAL_GPIO_WritePin(GPIOE,GPIO_PIN_8,GPIO_PIN_RESET);
 	          HAL_GPIO_WritePin(GPIOE,GPIO_PIN_9,GPIO_PIN_SET);
 
-		  // IN3,IN4 pin	(motor B)
 		  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,GPIO_PIN_SET);
 		  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_2,GPIO_PIN_RESET);
 	}
 
-	if((left_velocity>0)&&(right_velocity<0))
+	if((SetPointLinearVelocity[0]>0) && (SetPointLinearVelocity[1]<0))
 	{
-		  // IN1,IN2 pin    (motor A)
 		  HAL_GPIO_WritePin(GPIOE,GPIO_PIN_8,GPIO_PIN_SET);
 	          HAL_GPIO_WritePin(GPIOE,GPIO_PIN_9,GPIO_PIN_RESET);
 
-		  // IN3,IN4 pin	(motor B)
 		  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,GPIO_PIN_SET);
 		  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_2,GPIO_PIN_RESET);
 	}
 
-	if((left_velocity<0)&&(right_velocity>0))
+	if((SetPointLinearVelocity[0]<0) && (SetPointLinearVelocity[1]>0))
 	{
-		  // IN1,IN2 pin    (motor A)
 		  HAL_GPIO_WritePin(GPIOE,GPIO_PIN_8,GPIO_PIN_RESET);
 	          HAL_GPIO_WritePin(GPIOE,GPIO_PIN_9,GPIO_PIN_SET);
 
-		  // IN3,IN4 pin	(motor B)
 		  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,GPIO_PIN_RESET);
 		  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_2,GPIO_PIN_SET);
 	}
-
 }
