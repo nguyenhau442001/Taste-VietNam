@@ -1,12 +1,13 @@
 /*
 ------------------------------------------------------------------------------
-~ File       : DCmotor.h
-~ Author     : Nguyen Hau
-~ Created on : Nov 14, 2022
-~ Brief      : This library is aimed to do some works:
- 	 	 	   1. Read Encoder x2 pulses mode (both falling/rising edge) using external interrupt
- 	 	 	   2. Calculate the actual velocity (RPM) using Timer 2.
- 	 	 	   3. Using PID to compute the value PWM corresponding with desired velocity. (using Timer 3 & PI controller )
+~ File       		: DCmotor.h
+~ Author     		: Nguyen Hau
+~ Created on 		: Nov 14, 2022
+~ Brief     		: This library is aimed to do some works:
+ 	 	 	   	   	   1. Read Encoder x2 pulses mode (both falling/rising edge) using external interrupt
+ 	 	 	   	   	   2. Calculate the actual velocity (RPM) using Timer 2.
+ 	 	 	   	   	   3. Using PID to compute the value PWM corresponding with desired velocity. (using Timer 3 & PI controller )
+~ Implementation 	: in file c
  ------------------------------------------------------------------------------
  */
 
