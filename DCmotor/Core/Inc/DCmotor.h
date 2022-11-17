@@ -10,8 +10,8 @@
  ------------------------------------------------------------------------------
  */
 
-#ifndef DCMOTOR_H_
-#define DCMOTOR_H_
+#ifndef INC_DCMOTOR_H_
+#define INC_DCMOTOR_H_
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Include ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 #include "stm32f4xx_hal.h"
@@ -24,13 +24,16 @@
 #define WHEEL_RADIUS 0.05
 #define ENCODER_RESOLUTION 5376
 
+extern TIM_HandleTypeDef htim2;
+extern TIM_HandleTypeDef htim3;
+
 /* PID Structure */
 typedef struct
 {
-	float Kp; // default: 0.229
-	float Ki; // default: 15.3
-	float Kb; // default: 22.222
-	float SampleTime;
+	float Kp; 			// default: 0.229
+	float Ki; 			// default: 15.3
+	float Kb; 			// default: 22.222
+	float SampleTime;	// default: 0.05
 }PID_TypeDef;
 
 /* Error Structure */
@@ -64,17 +67,23 @@ typedef struct
 	int PreviousRightStatus;
 }Status_TypeDef;
 
+
+/* ::::::: Read Encoder x2 Mode ::::::: */
 void ReadEncoder();
+
+/* ::::::: ComputeVelocity ::::::: */
 void ComputeVelocity();
-void PID_Compute(PID_TypeDef *uPID,Error_TypeDef *Error,float Kp, float Ki, float Kb, float SampleTime,double SetPoint, double ControlledVariable,float *PidOutput);
+
+/* ::::::: Calculate PID for both 2 motor ::::::: */
+void PID2Motor(PID_TypeDef *uPID,Error_TypeDef *Error,float Kp, float Ki, float Kb, float SampleTime,float ArraySetpoint[2],float ArrayResponse[2],float PidOutput[2]);
+
+/* ::::::: Calculate PID for single motor ::::::: */
+void PID_Compute(PID_TypeDef *uPID,Error_TypeDef *Error,float Kp, float Ki, float Kb, float SampleTime,float RPMSetPoint, float RPMResponse,float *PidOutput);
+
+/* ::::::: Subscribe the pair velocity from ROS ::::::: */
 void SubcribeVelocityFromRos(const double linear_velocity,const double angular_velocity);
 
 
-
-
-
-
-
-
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ End of the program ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 #endif /* INC_DCMOTOR_H_ */

@@ -15,7 +15,9 @@
 /********** Declare struct **********/
 extern PID_TypeDef uPID;
 Error_TypeDef err;
-
+extern float SetPointAngularVelocity[2]={17.0,17.0};
+extern float ActualAngularVelocity[2]  ;
+float PidOut[2];
 ros::NodeHandle nh;
 
 /********** Declare publisher **********/
@@ -26,13 +28,7 @@ char hello[] = "Hello Taste VN!";
 /********** Declare subscriber **********/
 ros::Subscriber<geometry_msgs::Twist> cmd_vel_sub("cmd_vel", commandVelocityCallback);
 
-float PidOut[2];
 
-/********** Extern variables **********/
-extern float SetPointAngularVelocity[2]={17.0,17.0};
-extern float ActualAngularVelocity[2]  ;
-extern TIM_HandleTypeDef htim2;
-extern TIM_HandleTypeDef htim3;
 
 void commandVelocityCallback(const geometry_msgs::Twist& cmd_vel_msg)
 {
@@ -68,16 +64,12 @@ void loop(void)
   ComputeVelocity();
   SubcribeVelocityFromRos(0.01,0);
 
-  PID_Compute(&uPID,&err,0.229,15.3,22.222,0.05,SetPointAngularVelocity[0],ActualAngularVelocity[0],&PidOut[0]);
-//  PID_Compute(&uPID,&err,0.229,15.3,22.222,0.05,SetPointAngularVelocity[1],ActualAngularVelocity[1],&PidOut[1]);
-    HAL_Delay(1000*(uPID.SampleTime));
-  	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_3,fabs(round(PidOut[0])));
-//  	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_1,fabs(round(PidOut[1])));
+  PID2Motor(&uPID,&err,0.229,15.3,22.222,0.05,SetPointAngularVelocity,ActualAngularVelocity,PidOut);
+
 
   str_msg.data = hello;
   chatter.publish(&str_msg);
   nh.spinOnce();
-//
-//  HAL_Delay(100);
+
 }
 

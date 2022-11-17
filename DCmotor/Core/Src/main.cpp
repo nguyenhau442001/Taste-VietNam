@@ -154,8 +154,6 @@ int main(void)
   // IN3,IN4 pin	(motor B)
 	  HAL_GPIO_WritePin(GPIOE,GPIO_PIN_8,GPIO_PIN_RESET);    // (0,1): < 0: forward. (1,0): >0 : reverse.
 	  HAL_GPIO_WritePin(GPIOE,GPIO_PIN_9,GPIO_PIN_SET);
-//
-
 
   // ENA, ENB
 //	  __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_3,100); // Motor A (left)
@@ -171,9 +169,6 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
     loop();
-
-//	current_tick=HAL_GetTick();
-//	diff_tick=current_tick-previous_tick;
 
   }
   /* USER CODE END 3 */

@@ -8,16 +8,18 @@
  */
 
 #include "DCmotor.h"
-
+#include "math.h"
 
 Counter_TypeDef Count;
 PID_TypeDef uPID;
 Status_TypeDef status;
 
+float PidOut[2];
 float ActualAngularVelocity[2];
 float ActualLinearVelocity[2]   ;
 float SetPointLinearVelocity[2] ;
 float SetPointAngularVelocity[2];
+
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
@@ -26,8 +28,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
  /* MOTOR A */
  if (GPIO_Pin == GPIO_PIN_12)
  {
-   // chương trình ngắt của chân 12
-
+     /* ~~~~~~ Interrupt program of pin 12 ~~~~~~ */
 	 Left_Channel_A_Status=HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_12);
 	 state0=state0|Left_Channel_A_Status;
 
@@ -60,7 +61,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 
 	 else if (GPIO_Pin == GPIO_PIN_13)
 	 {
-	   // chương trình ngắt của chân 13
+		 /* ~~~~~~ Interrupt program of pin 13 ~~~~~~ */
 		 Left_Channel_A_Status=HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_12);
 		 state1=state1|Left_Channel_A_Status;
 
@@ -92,9 +93,9 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	 }
 
  	 /* MOTOR B */
-	 else if (GPIO_Pin == GPIO_PIN_10)		 // LEFT CHANNEL B
+	 else if (GPIO_Pin == GPIO_PIN_10)
 	 {
-		 // chương trình ngắt của chân 10
+		 /* ~~~~~~ Interrupt program of pin 10 ~~~~~~ */
 
 		 Right_Channel_A_Status=HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_10);
 		 state2=state2|Right_Channel_A_Status;
@@ -130,7 +131,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 
 	 else if (GPIO_Pin == GPIO_PIN_11)
 	 {
-		 // chương trình ngắt của chân 11
+		 /* ~~~~~~ Interrupt program of pin 11 ~~~~~~ */
 
 		 Right_Channel_A_Status=HAL_GPIO_ReadPin(GPIOE,GPIO_PIN_10);
 		 state3=state3|Right_Channel_A_Status;
@@ -166,20 +167,22 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
+	/* ~~~~~ Increase count variable until reach the sample time ~~~~~ */
 	Count.SampleTimeCount++;
-	if(Count.SampleTimeCount == 1000*(uPID.SampleTime)) //1 cnt = 0.001s, default:100 = 0.1s
+	if(Count.SampleTimeCount == 1000*(uPID.SampleTime)) //1 step time = 0.001s, default:100 = 0.1s
 	{
-
+		/* ~~~~~ Compute angular velocity base the number pulses encoder return ~~~~~ */
 		ActualAngularVelocity[0]   = Count.CurrentLeftCount * 60  / (ENCODER_RESOLUTION*0.001*Count.SampleTimeCount);
 		ActualAngularVelocity[1]   = Count.CurrentRightCount* 60  / (ENCODER_RESOLUTION*0.001*Count.SampleTimeCount);
 
+		/* ~~~~~ Reset count variables to prepare for the next computation ~~~~~ */
 		Count.CurrentLeftCount=0;
 		Count.CurrentRightCount=0;
 		Count.SampleTimeCount=0;
 	}
 }
 
-void PID_Compute(PID_TypeDef *uPID,Error_TypeDef *Error,float Kp, float Ki, float Kb, float SampleTime,double SetPoint, double ControlledVariable,float *PidOutput)
+void PID_Compute(PID_TypeDef *uPID,Error_TypeDef *Error,float Kp, float Ki, float Kb, float SampleTime,float RPMSetPoint, float RPMResponse,float *PidOutput)
 {
 	// PWM mode has the range from 0 to 400.
 	float HighLimit = 400, PWM, PWM_hat, uk, ui;
@@ -190,18 +193,21 @@ void PID_Compute(PID_TypeDef *uPID,Error_TypeDef *Error,float Kp, float Ki, floa
 	uPID->Ki 		= Ki;
 	uPID->Kb 		= Kb;
 	uPID->SampleTime= SampleTime;
-	// Calculate the error
-	Error->CurrentError= SetPoint-fabs(ControlledVariable);
 
-	// Proportion
+	/* ~~~~~~~~~~ Calculate the error ~~~~~~~~~~ */
+	Error->CurrentError = RPMSetPoint - fabs(RPMResponse);
+
+	/* ~~~~~~~~~~ PWM output for ONLY Proportion ~~~~~~~~~~ */
 	uk = (uPID->Kp) * (Error->CurrentError);
 
-	// Integration
+	/* ~~~~~~~~~~ PWM output for ONLY Integral~~~~~~~~~~ */
 	ui = previous_ui + (uPID->Ki) * (Error->CurrentError) * (uPID->SampleTime);
 
+	/* ~~~~~~~~~~ Sum PWM output from Integral and Proportion ~~~~~~~~~~ */
 	PWM = ui+uk;
 
-	// Anti wind-up for Integration
+	/* ~~~~~~~~~~ To avoid accumulate error due to Integral, we apply Anti wind-up method ~~~~~~~~~~ */
+	/* ~~~~~ Start Anti-windup ~~~~~ */
 	if(PWM < HighLimit)
 	{
 		PWM_hat = PWM;
@@ -224,38 +230,60 @@ void PID_Compute(PID_TypeDef *uPID,Error_TypeDef *Error,float Kp, float Ki, floa
 		*PidOutput = uk+ui;
 	}
 	previous_ui=ui;
-
+	/* ~~~~~ End Anti-windup ~~~~~ */
 }
 
+void PID2Motor(PID_TypeDef *uPID,Error_TypeDef *Error,float Kp, float Ki, float Kb, float SampleTime,float ArraySetpoint[2],float ArrayResponse[2],float PidOutput[2])
+{
+	/* ~~~~~ Calculate PWM for left motor ~~~~~ */
+	PID_Compute(uPID,Error,Kp,Ki,Kb,SampleTime,ArraySetpoint[0],ArrayResponse[0],&PidOutput[0]);
+
+	/* ~~~~~ Calculate PWM for right motor ~~~~~ */
+	PID_Compute(uPID,Error,Kp,Ki,Kb,SampleTime,ArraySetpoint[1],ArrayResponse[1],&PidOutput[1]);
+
+	/* ~~~~~ Sampling Time for PID ~~~~~ */
+	/* Note: The sampling time for PID and calculate velocity are the same */
+	HAL_Delay(1000*(uPID->SampleTime));
+
+	/* ~~~~~ Because the last argument of __HAL_TIM_SetCompare must be INTEGER, so we need round the value PWM output ~~~~~ */
+	PidOutput[0]=fabs(round(PidOutput[0]));
+	PidOutput[1]=fabs(round(PidOutput[1]));
+
+	/* ~~~~~ Put the PWM value into both motors ~~~~~~ */
+	__HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_3,PidOutput[0]);
+	__HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_1,PidOutput[1]);
+}
 void ReadEncoder()
 {
+	/* ~~~~~ Read Encoder base on external interrupt event ~~~~~~ */
 	void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 }
 
 void ComputeVelocity()
 {
+	/* ~~~~~ Compute Velocity base on timer interrupt event ~~~~~~ */
 	void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
 }
 
 void SubcribeVelocityFromRos(const double linear_velocity,const double angular_velocity)
 {
 
-	// Calculate vel of each wheel [0]: left, [1]: right
+	/* ~~~~~~ Calculate linear velocity of each wheel corresponding velocity pair that ROS send down, [0]: left, [1]: right ~~~~~~ */
 	SetPointLinearVelocity[0]    =  (2*linear_velocity-angular_velocity*WHEEL_SEPARATION)/2;  // unit: m/s
 	SetPointLinearVelocity[1]    =  (2*linear_velocity+angular_velocity*WHEEL_SEPARATION)/2;
 
-	//v=omega.r => omega=v/r (rad/s)
+	/* ~~~~~~ Convert m/s to rad/s, v=omega.r => omega=v/r (rad/s) ~~~~~ */
 	SetPointAngularVelocity[0]   =  SetPointLinearVelocity[0] /WHEEL_RADIUS;
 	SetPointAngularVelocity[1]   =  SetPointLinearVelocity[1] /WHEEL_RADIUS;
 
-	// convert to RPM
+	/* ~~~~~~  convert to RPM ~~~~~~ */
 	SetPointAngularVelocity[0]   = SetPointAngularVelocity[0]*60 /2*PI;
 	SetPointAngularVelocity[1]   = SetPointAngularVelocity[1]*60 /2*PI;
 
-	// Determine the direction with the sign of value corresponding
-	// (0,1): clockwise, (1,0): counter clockwise.
-	// IN1 (PB1), IN2 (PB2) pin    (motor A)
-	// IN3 (PE8), IN4 (PE9) pin	   (motor B)
+	/* ~~~~~~ Determine the direction with the sign of velocity corresponding ~~~~~~ */
+	/* ~~~~~~ Note: (0,1): clockwise, (1,0): counter clockwise ~~~~~~ */
+	/* ~~~~~~ IN1 (PB1), IN2 (PB2) pin (motor A) ~~~~~~ */
+	/* ~~~~~~ IN3 (PE8), IN4 (PE9) pin (motor B) ~~~~~~ */
 
 	if((SetPointLinearVelocity[0]>0) && (SetPointLinearVelocity[1]>0))
 	{
