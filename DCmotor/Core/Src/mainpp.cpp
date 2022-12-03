@@ -62,10 +62,11 @@ void loop(void)
 
   ReadEncoder();
   ComputeVelocity();
+//  uPID.SampleTime=0.05;
   SubcribeVelocityFromRos(0.01,0);
 
-  PID2Motor(&uPID,&err,0.229,15.3,22.222,0.05,SetPointAngularVelocity,ActualAngularVelocity,PidOut);
-
+  PID2Motor(&uPID,&err,4.557*3,101.267*3,22.222,0.05,SetPointAngularVelocity,ActualAngularVelocity,PidOut);
+//	__HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_3,400);
 
   str_msg.data = hello;
   chatter.publish(&str_msg);

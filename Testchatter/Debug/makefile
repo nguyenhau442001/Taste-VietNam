@@ -85,8 +85,8 @@ all: main-build
 main-build: Testchatter.elf secondary-outputs
 
 # Tool invocations
-Testchatter.elf Testchatter.map: $(OBJS) $(USER_OBJS) D:\OneDrive\ -\ hcmute.edu.vn\Taste\ VietNam\Testchatter\STM32F411VETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-g++ -o "Testchatter.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"D:\OneDrive - hcmute.edu.vn\Taste VietNam\Testchatter\STM32F411VETX_FLASH.ld" -Wl,-Map="Testchatter.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
+Testchatter.elf Testchatter.map: $(OBJS) $(USER_OBJS) C:\Users\poetc\OneDrive\ -\ hcmute.edu.vn\Taste\ VietNam\Testchatter\STM32F411VETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-g++ -o "Testchatter.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\poetc\OneDrive - hcmute.edu.vn\Taste VietNam\Testchatter\STM32F411VETX_FLASH.ld" -Wl,-Map="Testchatter.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

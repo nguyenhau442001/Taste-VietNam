@@ -16,7 +16,7 @@
 void setup(void);
 void loop(void);
 
-#include "DCmotor.h"
+#include <PID/PID.h>
 
 #ifdef __cplusplus
 }

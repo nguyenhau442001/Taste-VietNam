@@ -1,0 +1,3 @@
+#Flash file .bin into terminal (linux) 
+
+st-flash write /mnt/hgfs/Folder/Testchatter.bin 0x08000000

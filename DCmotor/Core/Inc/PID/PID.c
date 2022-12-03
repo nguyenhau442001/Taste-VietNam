@@ -1,5 +1,5 @@
 /*
- * Dcmotor.c
+ * PID.c
  *
  *  Created on: Nov 14, 2022
  *      Author: Nguyen Hau
@@ -7,7 +7,7 @@
  *
  */
 
-#include "DCmotor.h"
+#include <PID/PID.h>
 #include "math.h"
 
 Counter_TypeDef Count;
@@ -320,4 +320,10 @@ void SubcribeVelocityFromRos(const double linear_velocity,const double angular_v
 		  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,GPIO_PIN_RESET);
 		  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_2,GPIO_PIN_SET);
 	}
+}
+
+void PositionControl(PID_TypeDef *uPID,Error_TypeDef *Error,float Kp, float Ki, float Kb, float SampleTime,float PositionSetPoint, float PositionResponse,float *PidPostitionOutput)
+{
+	//6.227,2.261
+	PID_Compute(uPID,Error,Kp,Ki,Kb,SampleTime,PositionSetPoint,PositionResponse,PidPostitionOutput);
 }

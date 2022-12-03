@@ -1,4 +1,4 @@
-"./Core/Src/DCmotor.o"
+"./Core/Inc/PID/PID.o"
 "./Core/Src/duration.o"
 "./Core/Src/main.o"
 "./Core/Src/mainpp.o"
